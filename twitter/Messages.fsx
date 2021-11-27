@@ -6,32 +6,48 @@
 open System
 open Akka.Actor
 open Akka.FSharp
-open Akka.Configuration
-
+//Commence
 //Client Side Messages Defined Here
-type ProcessControllerMsg =
-    | Start of int*int*int*string
-    | RegisterUser of int
-    
-type BossMessages = 
-    | Start of (int*int*int*string)
-    | RegisterUser of (int)
-    | Offline of (string)
-    | Received of (int)
-    | AckUserReg of (string*string)
-
-type FollowMessages = 
-    | Init of (list<string>*int)
-
-type UserMessages = 
-    | Ready of (string*list<string>*ActorSelection*int*string*List<string>*int)
-    | GoOnline
-    | GoOffline
+type Client_Messages =
+    //ProcessController
+    | Commence of int*int*int*string
+    | UserRegistration of int
+    | SetOffline of string
+    | Receive of int
+    | Acknowledgement of string*string //ProcessController as well as Client
+    | Initialize of list<string>*int //Initialize needed when following
+    //Messages from various users
+    | UserReady of (string*list<string>*ActorSelection*int*string*List<string>*int)
+    | RequestStatOnline //GoOnline
+    | RequestStatOffline //GoOffline
     | Action
     | ActionTweet
     
-type ClientMessages = 
-    | AckUserReg of (string*string)
+//type BossMessages = 
+//    | Start of (int*int*int*string)
+//    | RegisterUser of (int)
+//    | Offline of (string)
+//    | Received of (int)
+//    | AckUserReg of (string*string)
+
+//type FollowMsg =
+//    | Initialize of list<string>*int
+    
+//type FollowMessages = 
+//    | Init of (list<string>*int)
+
+//type UserMessages = 
+//    | Ready of (string*list<string>*ActorSelection*int*string*List<string>*int)
+//    | GoOnline
+//    | GoOffline
+//    | Action
+//    | ActionTweet
+
+// Currently shall use the Acknowledgement of ProcessController    
+//type ClientMessages = 
+//    | AckUserReg of (string*string)
+//===========Messages Modified as of right now==================
+
 
 //ServerSideMessages Defined Here
 //type UserMessages = 
