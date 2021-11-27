@@ -1,5 +1,7 @@
 #time "on"
 #r "nuget: Akka.FSharp"
+#load "Messages.fsx"
+
 
 open System
 open Akka.Actor
@@ -25,9 +27,8 @@ let user(mailbox:Actor<_>) =
         match msg with
         | Tweet action ->
             match action with
-            | SendTweet tweet
-                
-            ()
+            | SendTweet tweet      
+            | _ -> ()
 
         return! loop()
     }
