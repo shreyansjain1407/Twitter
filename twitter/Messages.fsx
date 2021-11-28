@@ -25,10 +25,11 @@ type Client_Messages =
     
 type ServerToUserAdmin =
     | Commence of string*string*string*string //Start
-    | ClientMessageAck of string*string*string*string //AckClientMsg
-    | UserRegistration of string*string*string*string //RegisterUser
-    | UserRegistrationAck of string*string*string*string //AckUserReg
+    | ClientMessageAck
+    | UserRegistration of string //RegisterUser
+    | UserRegistrationAck of string*string //AckUserReg
     | SetStatusOffline
+    | OnlineAcknowledgement of string
     
 //type BossMessages = 
 //    | Start of (int*int*int*string)

@@ -151,16 +151,64 @@ let UserAdmin (mailbox:Actor<_>) =
 //        let (message,_,_,_,_) : Tuple<string,string,string,string,string> = downcast msg
         match msg with
         | Commence(id',totalUsers',totalClients',curPort') ->
+            printfn $"Operations Commence at Client: {ClientID}"
             ClientID <- id'
             totalUsers <- (int32) totalUsers'
             totalClients <- (int32) totalClients'
             curClientPort <- curPort'
             let mutable users = [|1 .. totalUsers|]
             Functions.shuffle users
-            ()
+            list_Users <- Array.toList users
+            for i in [1 .. totalUsers] do
+                let key = (string) users.[i-1]
+                subsrank <- subsrank |> Map.add (sprintf "%s_%s" ClientID key) ((totalUsers-1)/i)
+                intervals <- intervals |> Map.add (sprintf "%s_%s" ClientID key) i
+            server <! ("ClientRegister",ClientID, curIP, curPort,DateTime.Now)
+            for i in [1..totalUsers] do
+                list_Clients <- (string) i :: list_Clients
+        | ClientMessageAck -> //of string*string*string*string //AckClientMsg
+            mailbox.Self <! UserRegistration("1")
+            system.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(8.0), mailbox.Self, SetStatusOffline)
+        | UserRegistration a ->
+            let curID' = (int) a
+            let mutable curID = sprintf "%s_%s" ClientID ((string) list_Users.[curID' - 1])
+            let curLocation = spawn system (sprintf "User_%s" curID) User
+            userLocation <- userLocation |> Map.add curID curLocation
+            server <! ("UserRegister", ClientID, curID, (string)subsrank.[curID], DateTime.Now)
+            registeredUsers <- curID :: registeredUsers
+            if curID' < totalUsers then
+                system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.0), mailbox.Self, UserRegistration(string (curID' + 1)))
+        | UserRegistrationAck(incomingID,incomingMsg) -> //of string*string*string*string //AckUserReg
+            printfn $"{incomingMsg}"
+            let temp =
+                if totalUsers/100 < 5 then
+                    5
+                else
+                    totalUsers/100
+            userLocation.[incomingID] <! UserReady(incomingID, list_Clients, server, totalUsers, ClientID, popularHashTags, temp*intervals.[incomingID])
+        | SetStatusOffline ->
+            let mutable total = registeredUsers.Length
+            let mutable set = Set.empty
+            for i in [1..total] do
+                let mutable upcomingOff = registeredUsers.[Random().Next(registeredUsers.Length)]
+                while offlineUsers.Contains(upcomingOff) || set.Contains(upcomingOff) do
+                    upcomingOff <- registeredUsers.[Random().Next(registeredUsers.Length)]
+                server <! ("GoOffline", ClientID, upcomingOff, "", DateTime.Now)
+                userLocation.[upcomingOff] <! SetStatusOffline
+                set <- set |> Set.add upcomingOff
+            for offlineClient in offlineUsers do
+                server <! ("GoOnline", ClientID, offlineClient, "", DateTime.Now)
+            offlineUsers <- Set.empty
+            offlineUsers <- set
+            system.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(8.0), mailbox.Self, SetStatusOffline)
+        | OnlineAcknowledgement incomingID -> //of string
+            userLocation.[incomingID] <! RequestStatOnline
         | _ -> ()
         return! loop()
     }
     loop()
-    
-    
+
+let userAdmin = spawn system "UserAdmin" UserAdmin
+userAdmin <! Commence(curClientID, totalUsers, totalClients, curPort)
+
+system.WhenTerminated.Wait()
