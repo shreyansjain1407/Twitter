@@ -131,9 +131,18 @@ let User (mailbox:Actor<_>) =
     loop()
     
 let UserAdmin (mailbox:Actor<_>) =
-    let mutable id = ""
-    let mutable totalUsers = 0
-    let mutable totalClients = 0
-    let mutable curPort = ""
+    let mutable ClientID = ""
+    let mutable totalUsers = 0 //nusers
+    let mutable totalClients = 0 //nClients
+    let mutable curClientPort = "" //
+    let mutable list_Clients = []
+    let mutable offlineUsers = Set.empty
+    let mutable registeredUsers = []
+    let mutable userLocation = Map.empty
+    let mutable intervals = Map.empty //intervalMap
+    let mutable list_Users = []
+    let mutable subsrank = Map.empty
+    let server = system.ActorSelection(sprintf "akka.tcp://Server@%s:8776/user/Server")
+    
     
     
