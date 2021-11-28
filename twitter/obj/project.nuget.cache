@@ -1,11 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "uOkh3NCisQqwUiTdAaAAGN5G8uVheCqOuDHWLEosoKDA3983+/GJ4L5IHhrvjUZQIYNt2arc95+8gJJT4/ComA==",
+  "dgSpecHash": "FNSrNrFh06kSEF61qGiN22yK17o9Z6Nj7H6Uf5aXnxDwC19SCZuQIfijZMH0IWZiY6wQAwvJ/6vs5Ifqrl7hhg==",
   "success": true,
   "projectFilePath": "E:\\Twitter\\twitter\\Twitter.fsproj",
   "expectedPackageFiles": [
-    "C:\\Users\\shrey\\.nuget\\packages\\fsharp.core\\5.0.0\\fsharp.core.5.0.0.nupkg.sha512",
-    "C:\\Users\\shrey\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.21\\microsoft.netcore.app.host.win-x64.3.1.21.nupkg.sha512"
+    "C:\\Users\\shrey\\.nuget\\packages\\fsharp.core\\5.0.0\\fsharp.core.5.0.0.nupkg.sha512"
   ],
   "logs": []
 }
