@@ -23,6 +23,13 @@ type Client_Messages =
     | Action
     | Tweet
     
+type ServerToUserAdmin =
+    | Commence of string*string*string*string //Start
+    | ClientMessageAck of string*string*string*string //AckClientMsg
+    | UserRegistration of string*string*string*string //RegisterUser
+    | UserRegistrationAck of string*string*string*string //AckUserReg
+    | SetStatusOffline
+    
 //type BossMessages = 
 //    | Start of (int*int*int*string)
 //    | RegisterUser of (int)

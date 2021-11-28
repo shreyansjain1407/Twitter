@@ -142,7 +142,18 @@ let UserAdmin (mailbox:Actor<_>) =
     let mutable intervals = Map.empty //intervalMap
     let mutable list_Users = []
     let mutable subsrank = Map.empty
-    let server = system.ActorSelection(sprintf "akka.tcp://ServerSide_Twitter@%s:8776/user/Server")
-    
+    let server = system.ActorSelection(sprintf "akka.tcp://ServerSide_Twitter@%s:8776/user/Server" mainServerIP)
+    let popularHashTags = [] //Implement reccent hashtags here
+//    =======================================================================
+    let rec loop() = actor {
+        let! (msg:obj) = mailbox.Receive()
+        let (message,_,_,_,_) : Tuple<string,string,string,string,string> = downcast msg
+        match message with
+        | "Start" ->
+            ()
+        | _ -> ()
+        return! loop()
+    }
+    loop()
     
     
