@@ -19,6 +19,7 @@ type UserMessage =
 
 
 let system = ActorSystem.Create("System")
+//let system = ActorSystem.Create("ServerSide_Twitter", configuration) //Line 35
 
 let user(mailbox:Actor<_>) =
     let rec loop() = actor {
@@ -32,3 +33,7 @@ let user(mailbox:Actor<_>) =
 
         return! loop()
     }
+
+
+
+//let boss = spawn system "Server" ServerActor Line 479

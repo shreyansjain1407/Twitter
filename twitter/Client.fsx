@@ -142,7 +142,7 @@ let UserAdmin (mailbox:Actor<_>) =
     let mutable intervals = Map.empty //intervalMap
     let mutable list_Users = []
     let mutable subsrank = Map.empty
-    let server = system.ActorSelection(sprintf "akka.tcp://Server@%s:8776/user/Server")
+    let server = system.ActorSelection(sprintf "akka.tcp://ServerSide_Twitter@%s:8776/user/Server")
     
     
     
