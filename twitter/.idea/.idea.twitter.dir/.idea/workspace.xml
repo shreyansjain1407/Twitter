@@ -4,7 +4,9 @@
     <projectFile>Twitter.fsproj</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e089b8fa-05fd-42dc-85bf-9bac15c71cf3" name="Changes" comment="" />
+    <list default="true" id="e089b8fa-05fd-42dc-85bf-9bac15c71cf3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.twitter.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.twitter.dir/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -66,7 +68,7 @@
       <workItem from="1637874645535" duration="125000" />
       <workItem from="1637874802967" duration="2669000" />
       <workItem from="1637937803745" duration="434000" />
-      <workItem from="1638028552312" duration="10343000" />
+      <workItem from="1638028552312" duration="19930000" />
     </task>
     <servers />
   </component>

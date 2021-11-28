@@ -21,7 +21,7 @@ type Client_Messages =
     | RequestStatOnline //GoOnline
     | RequestStatOffline //GoOffline
     | Action
-    | ActionTweet
+    | Tweet
     
 //type BossMessages = 
 //    | Start of (int*int*int*string)

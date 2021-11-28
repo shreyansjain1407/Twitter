@@ -51,8 +51,7 @@ let User (mailbox:Actor<_>) =
     let mutable list_Clients = []
     let mutable server = ActorSelection()
     let mutable totalUsers = 0
-    //A bunch of random strings that will be implemented as needed
-    
+    let random = Random()
     let mutable ClientID = "" //cliID
     let mutable popularHashTags = [] //topHashTags
     let mutable curTweets = 0 //tweetCount
@@ -70,26 +69,71 @@ let User (mailbox:Actor<_>) =
             popularHashTags <- popularHashTags'
             interval <- (float) time
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(50.), mailbox.Self, Action)
-            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.), mailbox.Self, ActionTweet)
+            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.), mailbox.Self, Tweet)
         | Client_Messages.Action ->
             if onlineStatus then
                 let actions = ["follow";"queryM";"queryHT"]
-                match actions.[Random().Next(actions.Length)] with
+                match actions.[random.Next(actions.Length)] with
                 | "follow" -> //Follow a user
-                    let mutable follUser = (string)[1..totalUsers].[Random().Next(totalUsers)]
-                    let mutable client = list_Clients.[Random().Next(list_Clients.Length)]
+                    let mutable follUser = (string)[1..totalUsers].[random.Next(totalUsers)]
+                    let mutable client = list_Clients.[random.Next(list_Clients.Length)]
                     let mutable toBeFollowed = sprintf "%s_%s" client follUser
                     while toBeFollowed = curID do
-                        follUser <- (string)[1 .. totalUsers].[Random().Next(totalUsers)]
+                        follUser <- (string)[1 .. totalUsers].[random.Next(totalUsers)]
                         toBeFollowed <- sprintf "%s_%s" client follUser
                     server <! ("Follow", client, curID, toBeFollowed, DateTime.Now)
                 | "queryM" ->
-                    ()
+                    let mutable mentUser = (string)[1..totalUsers].[random.Next(totalUsers)]
+                    let mutable client = list_Clients.[random.Next(list_Clients.Length)]
+                    let mutable toBeMentioned = sprintf "%s_%s" client mentUser
+                    server <! ("Mention", client, curID, toBeMentioned, DateTime.Now)
                 | "queryHT" ->
+                    let ht = popularHashTags.[random.Next(popularHashTags.Length)]
+                    server <! ("HashTag",ClientID,curID, ht, DateTime.Now)
                     ()
-                | _ -> ignore()
-            
+                | _ -> ()
+        | Client_Messages.Tweet ->
+            if onlineStatus then
+                let tweets = ["tweet";"retweet";"hashtweet";"hashmention"]
+                let curTime = DateTime.Now
+                match tweets.[random.Next(tweets.Length)] with
+                | "tweet" ->
+                    curTweets <- curTweets + 1
+                    server <! ("Tweet", ClientID, curID, sprintf "Tweet from %s : %d" curID curTweets, curTime)
+                | "retweet" ->
+                    server <! ("ReTweet", ClientID, curID, sprintf "%s ReTweeted" curID, curTime)
+                | "hashtweet" ->
+                    curTweets <- curTweets + 1
+                    let ht = popularHashTags.[random.Next(popularHashTags.Length)]
+                    server <! ("Tweet", ClientID, curID, sprintf "Tweet from %s: %d with #%s" curID curTweets ht, curTime)
+                | "hashmention" ->
+                    let mutable mentUser = (string)[1..totalUsers].[random.Next(totalUsers)]
+                    let mutable client = list_Clients.[random.Next(list_Clients.Length)]
+                    let mutable toBeMentioned = sprintf "%s_%s" client mentUser
+                    while mentUser = curID do
+                        mentUser <- (string) [1..totalUsers].[random.Next(totalUsers)]
+                        toBeMentioned <- sprintf "%s_%s" client mentUser
+                    let ht = popularHashTags.[random.Next(popularHashTags.Length)]
+                    curTweets <- curTweets + 1
+                    let tweet = sprintf "Tweet from %s: %d with #%s and @%s" curID curTweets ht toBeMentioned
+                    server <! ("Tweet",ClientID, curID, tweet, curTime)
+                | _ -> ()
+                system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(interval), mailbox.Self, Tweet)
+        | Client_Messages.RequestStatOffline ->
+            onlineStatus <- false
+        | Client_Messages.RequestStatOnline ->
+            onlineStatus <- true
+            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(100.0), mailbox.Self, Action)
+            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(101.0), mailbox.Self, Tweet)
         | _ -> ()
         return! loop()
     }
     loop()
+    
+let UserAdmin (mailbox:Actor<_>) =
+    let mutable id = ""
+    let mutable totalUsers = 0
+    let mutable totalClients = 0
+    let mutable curPort = ""
+    
+    
