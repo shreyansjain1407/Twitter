@@ -9,7 +9,6 @@ open Akka.FSharp
 //Commence
 //Client Side Messages Defined Here
 type Client_Messages =
-    //ProcessController
     | Commence of int*int*int*string
     | UserRegistration of int
     | SetOffline of string
@@ -18,16 +17,16 @@ type Client_Messages =
     | Initialize of list<string>*int //Initialize needed when following
     //Messages from various users
     | UserReady of (string*list<string>*ActorSelection*int*string*List<string>*int)
-    | RequestStatOnline //GoOnline
-    | RequestStatOffline //GoOffline
+    | RequestStatOnline
+    | RequestStatOffline
     | Action
     | ClientTweet
     
 type ServerToUserAdmin =
-    | Commence of string*string*string*string //Start
+    | Commence of string*string*string*string
     | ClientMessageAck
-    | UserRegistration of string //RegisterUser
-    | UserRegistrationAck of string*string //AckUserReg
+    | UserRegistration of string
+    | UserRegistrationAck of string*string
     | SetStatusOffline
     | OnlineAcknowledgement of string
     
