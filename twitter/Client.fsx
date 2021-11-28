@@ -7,6 +7,7 @@ open Messages
 #r "nuget: Akka.Remote"
 #r "nuget: Akka.TestKit"
 #load "Messages.fsx"
+#load "Functions.fsx"
 
 open System
 open Akka.Actor
@@ -146,10 +147,16 @@ let UserAdmin (mailbox:Actor<_>) =
     let popularHashTags = [] //Implement reccent hashtags here
 //    =======================================================================
     let rec loop() = actor {
-        let! (msg:obj) = mailbox.Receive()
-        let (message,_,_,_,_) : Tuple<string,string,string,string,string> = downcast msg
-        match message with
-        | "Start" ->
+        let! msg = mailbox.Receive()
+//        let (message,_,_,_,_) : Tuple<string,string,string,string,string> = downcast msg
+        match msg with
+        | Commence(id',totalUsers',totalClients',curPort') ->
+            ClientID <- id'
+            totalUsers <- (int32) totalUsers'
+            totalClients <- (int32) totalClients'
+            curClientPort <- curPort'
+            let mutable users = [|1 .. totalUsers|]
+            Functions.shuffle users
             ()
         | _ -> ()
         return! loop()
