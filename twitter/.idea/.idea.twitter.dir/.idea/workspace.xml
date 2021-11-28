@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e089b8fa-05fd-42dc-85bf-9bac15c71cf3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Functions.fsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.twitter.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.twitter.dir/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client.fsx" beforeDir="false" afterPath="$PROJECT_DIR$/Client.fsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Twitter.fsproj" beforeDir="false" afterPath="$PROJECT_DIR$/Twitter.fsproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Messages.fsx" beforeDir="false" afterPath="$PROJECT_DIR$/Messages.fsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Debug/netcoreapp3.1/Twitter.fsproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/netcoreapp3.1/Twitter.fsproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/obj/rider.project.restore.info" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +37,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="SolutionBuilderGeneralOptionsPageId" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager">
@@ -72,7 +73,7 @@
       <workItem from="1637874802967" duration="2669000" />
       <workItem from="1637937803745" duration="434000" />
       <workItem from="1638028552312" duration="20580000" />
-      <workItem from="1638103739833" duration="5088000" />
+      <workItem from="1638103739833" duration="5517000" />
     </task>
     <servers />
   </component>

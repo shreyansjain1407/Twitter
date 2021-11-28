@@ -61,7 +61,7 @@ let User (mailbox:Actor<_>) =
     let rec loop() = actor{
         let! msg = mailbox.Receive()
         match msg with
-        | Client_Messages.UserReady(userID', list_Clients', server', totalUsers', curClientID', popularHashTags', time) ->
+        | UserReady(userID', list_Clients', server', totalUsers', curClientID', popularHashTags', time) ->
             curID <- userID'
             list_Clients <- list_Clients'
             server <- server'
@@ -71,7 +71,7 @@ let User (mailbox:Actor<_>) =
             interval <- (float) time
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(50.), mailbox.Self, Action)
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.), mailbox.Self, Tweet)
-        | Client_Messages.Action ->
+        | Action ->
             if onlineStatus then
                 let actions = ["follow";"queryM";"queryHT"]
                 match actions.[random.Next(actions.Length)] with
@@ -93,7 +93,7 @@ let User (mailbox:Actor<_>) =
                     server <! ("HashTag",ClientID,curID, ht, DateTime.Now)
                     ()
                 | _ -> ()
-        | Client_Messages.Tweet ->
+        | ClientTweet ->
             if onlineStatus then
                 let tweets = ["tweet";"retweet";"hashtweet";"hashmention"]
                 let curTime = DateTime.Now
@@ -120,9 +120,9 @@ let User (mailbox:Actor<_>) =
                     server <! ("Tweet",ClientID, curID, tweet, curTime)
                 | _ -> ()
                 system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(interval), mailbox.Self, Tweet)
-        | Client_Messages.RequestStatOffline ->
+        | RequestStatOffline ->
             onlineStatus <- false
-        | Client_Messages.RequestStatOnline ->
+        | RequestStatOnline ->
             onlineStatus <- true
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(100.0), mailbox.Self, Action)
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(101.0), mailbox.Self, Tweet)

@@ -21,7 +21,7 @@ type Client_Messages =
     | RequestStatOnline //GoOnline
     | RequestStatOffline //GoOffline
     | Action
-    | Tweet
+    | ClientTweet
     
 type ServerToUserAdmin =
     | Commence of string*string*string*string //Start
