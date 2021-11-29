@@ -57,15 +57,15 @@ type ServerToUserAdmin =
 
 
 //ServerSideMessages Defined Here
-//type UserMessages = 
-//    | Init of (IActorRef*IActorRef*IActorRef)
-//    | Register of (string*string*string*DateTime)
-//    | Follow of (string*string*string*DateTime)
-//    | Offline of (string*string*DateTime)
-//    | Online of (string*string*IActorRef*DateTime)
-//    | UpdateUserClientPrinters of (Map<string,ActorSelection>)
-//    | UpdateFeeds of (string*string*string*string*DateTime)
-//    | UsersPrint of (Map<string,string>*uint64*DateTime)
+type UserMessages = 
+    | Init of IActorRef*IActorRef*IActorRef
+    | Register of string*string*DateTime //Shortened to fit only three variables
+    | Follow of string*string*string*DateTime
+    | Offline of string*string*DateTime
+    | Online of string*string*IActorRef*DateTime
+    | UpdateUserClientPrinters of Map<string,ActorSelection>
+    | UpdateFeeds of string*string*string*DateTime //Shortened to fit only three variables
+    | UsersPrint of Map<string,string>*uint64*DateTime
 
 //type TwitterMessages =
 //    | InitializeTweet of IActorRef*IActorRef

@@ -102,8 +102,23 @@ let UserServer(mailbox:Actor<_>) =
     let rec loop() = actor {
         let! msg = mailbox.Receive()
         match msg with
-            |
-    
+        | Init(reTweeter, feed, tweeter) -> //(IActorRef*IActorRef*IActorRef)
+            ()
+        | Register(userID, subRank, timeStamp) -> //(string*string*DateTime) //Shortened to fit only three variables
+            ()
+        | Follow(clientID, userID, followID, timeStamp) -> //(string*string*string*DateTime)
+            ()
+        | Offline(clientID, userID, timeStamp) -> //(string*string*DateTime)
+            ()
+        | Online(clientID, userID, userAdmin, timeStamp) -> //(string*string*IActorRef*DateTime)
+            ()
+        | UpdateUserClientPrinters map -> //(Map<string,ActorSelection>)
+            ()
+        | UpdateFeeds(userID, incomingTweet, tweetType, timeStamp) -> //(string*string*string*DateTime) //Shortened to fit only three variables
+            ()
+        | UsersPrint(map, performance, timeStamp) -> //(Map<string,string>*uint64*DateTime)
+            ()
+        | _ -> ()
         return! loop()
     } loop()
 
