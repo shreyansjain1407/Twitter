@@ -224,36 +224,35 @@ let serverEngine(mailbox:Actor<_>) =
     let rec loop() = actor {
         let! msg = mailbox.Receive()
         match msg with
-        | UserRegister ->
+        | Start ->
+            ()
+        | ClientRegister(clientID, clientIP, clientPort) -> 
+            ()
+        | UserRegister(clientID, userID, count, timeStamp) ->
             let clientPort = system.ActorSelection(sprintf "akka.tcp://ServerSide_Twitter@%s:%s/user/Printer" cur_ cmd)
             clientInfo <- Map.add clientID clientPort clientInfo
             tweeter <! UpdateTwitterInfo(clientInfo)
             retweeter <! UpdateRetweetInfo(clientInfo)
             hashtag <! UpdateHashTagInfo(clientInfo)
-        | GoOnline ->
+        | GoOnline(clientID, userID, timeStamp) ->
             ()
-        | Start ->
+        | GoOffline(clientID, userID, timeStamp) ->
             ()
-        | ClientRegister -> 
+        | Follow(clientID, userID, toBeFollowed, timeStamp) ->
             ()
-        | GoOffline ->
+        | Tweet(clientID, userID, tweet, timeStamp) ->
             ()
-        | Follow ->
+        | ReTweet(clientID, userId, timeStamp) ->
             ()
-        | Tweet ->
+        | serverEngineMessages.QueryMentions(clientID, userID, mentionedUser, timeStamp) ->
             ()
-        | ReTweet ->
+        | QueryHashtags(clientID, userID, hashTag, timeStamp) ->
             ()
-        | serverEngineMessages.QueryMentions ->
-            ()
-        | QueryHashtags ->
-            ()
-        | ServiceStats ->
+        | ServiceStats(key, value) ->
             ()
         | PrintStats ->
             ()
-        | _ ->
-            ()
+        | _ -> ()
         
         return! loop()         
     } loop()

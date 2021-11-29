@@ -75,18 +75,18 @@ type UserMessages =
     | UpdateFeed of (string*string*string*string*DateTime)
 
 type serverEngineMessages =
-    | UserRegister of DateTime
-    | GoOnline of 
-    | Start of 
-    | ClientRegister of 
-    | GoOffline of 
-    | Follow of 
-    | Tweet of 
-    | ReTweet of 
-    | QueryMentions of 
-    | QueryHashtags of 
-    | ServiceStats of 
-    | PrintStats of 
+    | Start
+    | ClientRegister of string*string*string
+    | UserRegister of string*string*string*DateTime
+    | GoOnline of string*string*DateTime
+    | GoOffline of string*string*DateTime
+    | Follow of string*string*string*DateTime
+    | Tweet of string*string*string*DateTime
+    | ReTweet of string*string*DateTime
+    | QueryMentions of string*string*string*DateTime
+    | QueryHashtags of string*string*string*DateTime
+    | ServiceStats of string*string
+    | PrintStats
 
 type TweetMessages = 
     | InitializeTweet of (IActorRef*IActorRef) 
