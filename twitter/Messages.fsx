@@ -74,6 +74,7 @@ type UserMessages =
     | RefreshTwitterFeed of (string*string*string*string*DateTime)
     | UpdateFeed of (string*string*string*string*DateTime)
 
+//All of the messages below have been shortened
 type serverEngineMessages =
     | Start
     | ClientRegister of string*string*string
