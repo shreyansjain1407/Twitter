@@ -83,17 +83,25 @@ let RetweetActor (mailbox:Actor<_>) =
         | InitializeRetweet (_user, _tweeter) ->
             user <- _user
             tweeter <- _tweeter
+        | RetweetFeed (clientID, userID, message) ->
+            let mutable tempList = []
+            if feed.ContainsKey userID then
+                tempList <- feed.[userID]
+            tempList <- message :: tempList
+            feed <- Map.remove userID feed
+            feed <- Map.add userID tempList feed
         | Retweet (clientID, userID, time) ->
             numRetweets <- numRetweets + 1
 
             let r = Random()
-            let randomTweet = feed.[userID]
+            let randomTweet = feed.[userID].[r.Next(feed.[userID].Length)]
             twitterInfo.[clientID] <! sprintf "%s Retweeted: %s" userID
 
+            let command = "retweet"
+            user <! UpdateFeed(clientID, userID, randomTweet, command, DateTime.Now)
             tweeter <! AddRetweet userID
-
         | UpdateRetweetInfo info ->
-            twitterInfo <- info
+            twitterInfo <- info 
         return! loop()
     } loop()
 

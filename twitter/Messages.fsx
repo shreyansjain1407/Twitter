@@ -72,6 +72,7 @@ type ServerToUserAdmin =
 //    | ServerTweet of string*string*string*DateTime*IActorRef
 type UserMessages =
     | RefreshTwitterFeed of (string*string*string*string*DateTime)
+    | UpdateFeed of (string*string*string*string*DateTime)
 
 type TweetMessages = 
     | InitializeTweet of (IActorRef*IActorRef) 
@@ -83,7 +84,7 @@ type TweetMessages =
 type RetweetMessages = 
     | InitializeRetweet of (IActorRef*IActorRef)
     | Retweet of (string*string*DateTime)
-    | RetweetFeedTable of (string*string*string)
+    | RetweetFeed of (string*string*string)
     | UpdateRetweetInfo of (Map<string,ActorSelection>)
 
 type ShowFeedMessages = 
