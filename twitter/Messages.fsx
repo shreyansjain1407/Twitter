@@ -91,18 +91,18 @@ type HashTagMessages =
     | ReadHashTag of (string*string*string)
     | QueryHashtag of (string*string*string*DateTime)
     | UpdateHashTagInfo of (Map<string,ActorSelection>)
-
-type ShowFeedMessages = 
-    | ShowFeeds of (string*string*IActorRef)
-    | UpdateFeedTable of (string*string*string)
-    | UpdateShowFeedClientPrinters of (Map<string,ActorSelection>)
-
+    
 type MentionsMessages = 
-    | InitMentions of (IActorRef)
+    | InitializeMentions of (IActorRef)
     | MentionsRegister of (string*string)
     | ParseMentions of (string*string*string*DateTime)
     | UpdateMentionsClientPrinters of (Map<string,ActorSelection>)
     | QueryMentions of (string*string*string*DateTime)
+
+type FeedMessages = 
+    | ShowFeeds of (string*string*IActorRef)
+    | UpdateFeedTable of (string*string*string)
+    | UpdateFeedInfo of (Map<string,ActorSelection>)
 
 type ServerMessage = 
     | ReceivedMessage of string*string*string*string*DateTime
