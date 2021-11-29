@@ -8,7 +8,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.twitter.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.twitter.dir/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Messages.fsx" beforeDir="false" afterPath="$PROJECT_DIR$/Messages.fsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server.fsx" beforeDir="false" afterPath="$PROJECT_DIR$/Server.fsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/netcoreapp3.1/Twitter.fsproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/netcoreapp3.1/Twitter.fsproj.CoreCompileInputs.cache" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +74,7 @@
       <workItem from="1638103739833" duration="5539000" />
       <workItem from="1638113570665" duration="86000" />
       <workItem from="1638113661815" duration="6486000" />
-      <workItem from="1638148069839" duration="1911000" />
+      <workItem from="1638148069839" duration="4559000" />
     </task>
     <servers />
   </component>

@@ -74,6 +74,20 @@ type UserMessages =
     | RefreshTwitterFeed of (string*string*string*string*DateTime)
     | UpdateFeed of (string*string*string*string*DateTime)
 
+type serverEngineMessages =
+    | UserRegister of DateTime
+    | GoOnline of 
+    | Start of 
+    | ClientRegister of 
+    | GoOffline of 
+    | Follow of 
+    | Tweet of 
+    | ReTweet of 
+    | QueryMentions of 
+    | QueryHashtags of 
+    | ServiceStats of 
+    | PrintStats of 
+
 type TweetMessages = 
     | InitializeTweet of (IActorRef*IActorRef) 
     | SendTweet of (string*string*string*DateTime*IActorRef)

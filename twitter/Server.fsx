@@ -199,7 +199,7 @@ let UserServer(mailbox:Actor<_>) =
             ()
         | Register(userID, subRank, timeStamp) -> //(string*string*DateTime) //Shortened to fit only three variables
             ()
-        | Follow(clientID, userID, followID, timeStamp) -> //(string*string*string*DateTime)
+        | UserMessages.Follow(clientID, userID, followID, timeStamp) -> //(string*string*string*DateTime)
             ()
         | Offline(clientID, userID, timeStamp) -> //(string*string*DateTime)
             ()
@@ -224,20 +224,37 @@ let serverEngine(mailbox:Actor<_>) =
     let rec loop() = actor {
         let! msg = mailbox.Receive()
         match msg with
-            | ReceivedMessage(msgType,clientID,cur_,cmd,t) ->
-                match msgType with
-                    | "UserRegister" ->
-                        let clientPort = system.ActorSelection(sprintf "akka.tcp://ServerSide_Twitter@%s:%s/user/Printer" cur_ cmd)
-                        clientInfo <- Map.add clientID clientPort clientInfo
-                        tweeter <! UpdateTwitterInfo(clientInfo)
-                        retweeter <! UpdateRetweetInfo(clientInfo)
-                        hashtag <! UpdateHashTagInfo(clientInfo)
-                    | "GoOnline" ->
-                        
-                ()
-            | _ -> ()
+        | UserRegister ->
+            let clientPort = system.ActorSelection(sprintf "akka.tcp://ServerSide_Twitter@%s:%s/user/Printer" cur_ cmd)
+            clientInfo <- Map.add clientID clientPort clientInfo
+            tweeter <! UpdateTwitterInfo(clientInfo)
+            retweeter <! UpdateRetweetInfo(clientInfo)
+            hashtag <! UpdateHashTagInfo(clientInfo)
+        | GoOnline ->
+            ()
+        | Start ->
+            ()
+        | ClientRegister -> 
+            ()
+        | GoOffline ->
+            ()
+        | Follow ->
+            ()
+        | Tweet ->
+            ()
+        | ReTweet ->
+            ()
+        | serverEngineMessages.QueryMentions ->
+            ()
+        | QueryHashtags ->
+            ()
+        | ServiceStats ->
+            ()
+        | PrintStats ->
+            ()
+        | _ ->
+            ()
         
-
         return! loop()         
     } loop()
 
