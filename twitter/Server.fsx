@@ -69,7 +69,7 @@ let Tweeter(mailbox:Actor<_>) =
         return! loop()
     } loop()
 
-let RetweetActor (mailbox:Actor<_>) = 
+let Retweet (mailbox:Actor<_>) = 
     let mutable numRetweets = 0
     let mutable twitterInfo = Map.empty
     let mutable user = mailbox.Self
@@ -102,6 +102,42 @@ let RetweetActor (mailbox:Actor<_>) =
             tweeter <! AddRetweet userID
         | UpdateRetweetInfo info ->
             twitterInfo <- info 
+        return! loop()
+    } loop()
+
+let HashTag (mailbox:Actor<_>) = 
+    let mutable twitterInfo = Map.empty
+    let mutable hashtags = Map.empty
+    let mutable numQuery = 0
+
+    let rec loop() = actor {
+        let! msg = mailbox.Receive()
+
+        match msg with
+            | ReadHashTag (clientID, userID, message) ->
+                let tweet = message.Split ' '
+                for t in tweet do
+                    if t.[0] = '#' then
+                         let tag = t.[1 .. (t.Length-1)]
+                         if not (hashtags.ContainsKey tag) then
+                             hashtags <- Map.add tag List.empty hashtags
+                         let mutable tempList = hashtags.[tag]
+                         tempList <- message :: tempList
+                         hashtags <- Map.remove tag hashtags
+                         hashtags <- Map.add tag tempList hashtags
+            | QueryHashtag (clientID, userID, hashtag, time) ->
+                 if twitterInfo.ContainsKey clientID then
+                     numQuery <- numQuery + 1
+                     if hashtags.ContainsKey hashtag then
+                         let mutable hashtagSize = hashtags.[hashtag].Length
+                         let mutable tag = ""
+                         for i in [0 .. (hashtagSize-1)] do
+                             tag <- hashtags.[hashtag].[i] + "\n"
+                         twitterInfo.[clientID] <! sprintf "Hastag Query %s by %s" hashtag userID
+                     else
+                         twitterInfo.[clientID] <! sprintf "Hashtag Query Failed by %s" userID
+            | UpdateHashTagInfo info ->
+                twitterInfo <- info
         return! loop()
     } loop()
 

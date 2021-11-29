@@ -87,6 +87,11 @@ type RetweetMessages =
     | RetweetFeed of (string*string*string)
     | UpdateRetweetInfo of (Map<string,ActorSelection>)
 
+type HashTagMessages = 
+    | ReadHashTag of (string*string*string)
+    | QueryHashtag of (string*string*string*DateTime)
+    | UpdateHashTagInfo of (Map<string,ActorSelection>)
+
 type ShowFeedMessages = 
     | ShowFeeds of (string*string*IActorRef)
     | UpdateFeedTable of (string*string*string)
@@ -98,11 +103,6 @@ type MentionsMessages =
     | ParseMentions of (string*string*string*DateTime)
     | UpdateMentionsClientPrinters of (Map<string,ActorSelection>)
     | QueryMentions of (string*string*string*DateTime)
-
-type HashTagMessages = 
-    | ReadHashTag of (string*string*string)
-    | UpdateHashTagInfo of (Map<string,ActorSelection>)
-    | QueryHashtags of (string*string*string*DateTime)
 
 type ServerMessage = 
     | ReceivedMessage of string*string*string*string*DateTime
