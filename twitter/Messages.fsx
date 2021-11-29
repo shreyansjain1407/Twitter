@@ -72,6 +72,7 @@ type UserMessages =
 //    | ServerTweet of string*string*string*DateTime*IActorRef
 type UserMessages =
     | RefreshTwitterFeed of (string*string*string*string*DateTime)
+    | UpdateFeed of (string*string*string*string*DateTime)
 
 type TweetMessages = 
     | InitializeTweet of (IActorRef*IActorRef) 
@@ -83,25 +84,25 @@ type TweetMessages =
 type RetweetMessages = 
     | InitializeRetweet of (IActorRef*IActorRef)
     | Retweet of (string*string*DateTime)
-    | RetweetFeedTable of (string*string*string)
+    | RetweetFeed of (string*string*string)
     | UpdateRetweetInfo of (Map<string,ActorSelection>)
 
-type ShowFeedMessages = 
-    | ShowFeeds of (string*string*IActorRef)
-    | UpdateFeedTable of (string*string*string)
-    | UpdateShowFeedClientPrinters of (Map<string,ActorSelection>)
-
+type HashTagMessages = 
+    | ReadHashTag of (string*string*string)
+    | QueryHashtag of (string*string*string*DateTime)
+    | UpdateHashTagInfo of (Map<string,ActorSelection>)
+    
 type MentionsMessages = 
-    | InitMentions of (IActorRef)
+    | InitializeMentions of (IActorRef)
     | MentionsRegister of (string*string)
     | ParseMentions of (string*string*string*DateTime)
     | UpdateMentionsClientPrinters of (Map<string,ActorSelection>)
     | QueryMentions of (string*string*string*DateTime)
 
-type HashTagMessages = 
-    | ReadHashTag of (string*string*string)
-    | UpdateHashTagInfo of (Map<string,ActorSelection>)
-    | QueryHashtags of (string*string*string*DateTime)
+type FeedMessages = 
+    | ShowFeeds of (string*string*IActorRef)
+    | UpdateFeedTable of (string*string*string)
+    | UpdateFeedInfo of (Map<string,ActorSelection>)
 
 type ServerMessage = 
     | ReceivedMessage of string*string*string*string*DateTime
