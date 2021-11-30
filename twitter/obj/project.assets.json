@@ -94,11 +94,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Twitter\\twitter\\Twitter.fsproj",
+      "projectUniqueName": "D:\\Twitter\\twitter\\Twitter.fsproj",
       "projectName": "Twitter",
-      "projectPath": "E:\\Twitter\\twitter\\Twitter.fsproj",
+      "projectPath": "D:\\Twitter\\twitter\\Twitter.fsproj",
       "packagesPath": "C:\\Users\\shrey\\.nuget\\packages\\",
-      "outputPath": "E:\\Twitter\\twitter\\obj\\",
+      "outputPath": "D:\\Twitter\\twitter\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\shrey\\AppData\\Roaming\\NuGet\\NuGet.Config"

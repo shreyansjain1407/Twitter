@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="e089b8fa-05fd-42dc-85bf-9bac15c71cf3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.twitter.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.twitter.dir/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Server.fsx" beforeDir="false" afterPath="$PROJECT_DIR$/Server.fsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,12 +73,14 @@
       <workItem from="1638113570665" duration="86000" />
       <workItem from="1638113661815" duration="6486000" />
       <workItem from="1638148069839" duration="6287000" />
+      <workItem from="1638226867304" duration="272000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
   <component name="VcsManagerConfiguration">
