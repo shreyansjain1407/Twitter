@@ -12,6 +12,8 @@ open Messages
 open System
 open Akka.Actor
 open Akka.FSharp
+open System.IO
+open System.Text
 
 let curIP = fsi.CommandLineArgs.[1] |> string //This is the IP of the sever
 
@@ -38,10 +40,11 @@ let Tweeter(mailbox:Actor<_>) =
     let mutable twitterInfo = Map.empty
     let mutable hashtag = mailbox.Self
     let mutable user = mailbox.Self
+    let mutable tweetTime = 0.0
 
     let rec loop() = actor {
         let! msg = mailbox.Receive()
-
+        let initTime = DateTime.Now
         match msg with
         | InitializeTweet (_user, _hashtag) ->
             user <- _user
@@ -60,12 +63,28 @@ let Tweeter(mailbox:Actor<_>) =
             hashtag <! ReadHashTag(clientID, userID, message)
             let command = "tweet" 
             user <! UpdateFeeds(userID, message, command, time)
+
+            tweetTime <- tweetTime + (initTime.Subtract time).TotalMilliseconds
+            let avgTime = tweetTime / (float) numTweets
+            mailbox.Sender() <! ServiceStats("Tweet", avgTime.ToString())
         | AddRetweet userID ->
             let currentNumTweet = numUserTweets.[userID] + 1
             numUserTweets <- Map.remove userID numUserTweets
             numUserTweets <- Map.add userID currentNumTweet numUserTweets
         | UpdateTwitterInfo info ->
             twitterInfo <- info
+        | PrintTwitterStats (follows, map, performance) ->
+            let path = "stats.txt"
+            File.WriteAllText(path, "")
+            File.AppendAllText(path, "\n"+ initTime.ToString())
+            File.AppendAllText(path, sprintf "\nNumber User requests per second = %u" performance)
+            File.AppendAllText(path, "\Average time for service:")
+            for s in map do
+                File.AppendAllText(path, sprintf "\n%s = %s" s.Key s.Value)
+            File.AppendAllText(path, sprintf "\n\nUSerID\tFollowers\tTweets\n")
+            for userID in follows do
+                if numUserTweets.ContainsKey userID.Key then
+                    File.AppendAllText(path, sprintf "%s\t%s\t%s\n" userID.Key (userID.Value.Count |> String) (numUserTweets.[userID.Key] |> String))
         return! loop()
     } loop()
 
@@ -75,10 +94,11 @@ let Retweeter (mailbox:Actor<_>) =
     let mutable user = mailbox.Self
     let mutable tweeter = mailbox.Self
     let mutable feed = Map.empty
+    let mutable rtTime = 0.0
 
     let rec loop() = actor {
         let! msg = mailbox.Receive()
-
+        let initTime = DateTime.Now
         match msg with
         | InitializeRetweet (_user, _tweeter) ->
             user <- _user
@@ -100,6 +120,10 @@ let Retweeter (mailbox:Actor<_>) =
             let command = "retweet" 
             user <! UpdateFeeds(userID, randomTweet, command, DateTime.Now)
             tweeter <! AddRetweet userID
+
+            rtTime <- rtTime + (initTime.Subtract time).TotalMilliseconds
+            let avgTime = rtTime / (float) numRetweets
+            mailbox.Sender() <! ServiceStats("Retweet", avgTime.ToString())
         | UpdateRetweetInfo info ->
             twitterInfo <- info 
         return! loop()
@@ -138,6 +162,8 @@ let HashTag (mailbox:Actor<_>) =
                     else
                         twitterInfo.[clientID] <! sprintf "Hashtag Query Failed by %s" userID
                     totalTime <- totalTime + (initTime.Subtract time).TotalMilliseconds
+                    let avgTime = totalTime / numQuery
+                    mailbox.Sender() <! ServiceStats("QueryHashTag", avgTime.ToString())
         | UpdateHashTagInfo info ->
             twitterInfo <- info
         return! loop()
@@ -185,7 +211,7 @@ let Mentions (mailbox:Actor<_>) =
                         str <- mentions.[mentionedUser].[i] + "\n"
                 totalTime <- totalTime + (initTime.Subtract timeStamp).TotalMilliseconds
                 let avg = totalTime / numQuery
-                mailbox.Sender() <! ("Stats", "", "QueryMentions", (avg |> string), DateTime.Now)
+                mailbox.Sender() <! ServiceStats("QueryMentions", avg.ToString())
         | UpdateMentionsInfo info ->
             twitterInfo <- info
         return! loop()
@@ -232,7 +258,7 @@ let UserServer(mailbox:Actor<_>) =
     let mutable following = Map.empty
     let mutable subscriber = Map.empty
     let mutable followTime = 1.0
-    let mutable userActions = 0
+    let mutable userActions = 1
     let rec loop() = actor {
         let! msg = mailbox.Receive()
         let initTime = DateTime.Now
@@ -284,10 +310,13 @@ let UserServer(mailbox:Actor<_>) =
             ()
         | UsersPrint(map, performance, timeStamp) -> //(Map<string,string>*uint64*DateTime)
             userActions <- userActions + 1
-            tweeter <! PrintTweetStats(following, map, performance)
+            tweeter <! PrintTwitterStats(following, map, performance)
             followTime <- followTime + (initTime.Subtract timeStamp).TotalMilliseconds
             ()
         | _ -> ()
+        
+        let avgTime = followTime / (float) userActions
+        mailbox.Sender() <! ServiceStats("Follow/Online/Offline", (avgTime.ToString()))
         return! loop()
     } loop()
 
@@ -298,13 +327,16 @@ let serverEngine(mailbox:Actor<_>) =
     let mutable mentions = mailbox.Self
     let mutable user = mailbox.Self
     let mutable feed = mailbox.Self
+    let mutable stats = Map.empty
     let mutable clientInfo = Map.empty
     let mutable clientActions = 0
+    let mutable initializedTimeStamp = DateTime.Now
     
     let rec loop() = actor {
         let! msg = mailbox.Receive()
         match msg with
         | Start ->
+            initializedTimeStamp <- DateTime.Now
             tweeter <- spawn system (sprintf "Tweeter") Tweeter
             retweeter <- spawn system (sprintf "Retweeter") Retweeter
             user <- spawn system (sprintf "User") UserServer
@@ -316,7 +348,7 @@ let serverEngine(mailbox:Actor<_>) =
             retweeter <! InitializeRetweet(user, tweeter)
             user <! Init(retweeter, feed, tweeter)
             mentions <! InitializeMentions(tweeter)
-            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(5000.0), mailbox.Self, ("PrintStats","","","",DateTime.Now))
+            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(5000.0), mailbox.Self, PrintStats)
             ()
         | ClientRegister(clientID, clientIP, clientPort) -> 
             clientActions <- clientActions + 1
@@ -361,8 +393,19 @@ let serverEngine(mailbox:Actor<_>) =
             hashtag <! QueryHashtag(clientID, userID, hashTag, timeStamp)
             ()
         | ServiceStats(key, value) ->
+            if key <> "" then
+                if stats.ContainsKey key then
+                    stats <- Map.remove key stats
+            stats <- Map.add key value stats
             ()
         | PrintStats ->
+            let mutable performance = 0
+            let timeSpan = (DateTime.Now-initializedTimeStamp).TotalSeconds |> int
+            if clientActions > 0 then
+                performance <- clientActions/timeSpan
+                user <! UsersPrint(stats, performance, DateTime.Now)
+                printfn "Server uptime = %u sec, requests = %u, Avg requests = %u per second" timeSpan clientActions performance
+            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(5000.0), mailbox.Self, PrintStats)
             ()
         | _ -> ()
         return! loop()         

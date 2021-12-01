@@ -65,7 +65,7 @@ type UserMessages =
     | Online of string*string*IActorRef*DateTime
     | UpdateUserInfo of Map<string,ActorSelection>
     | UpdateFeeds of string*string*string*DateTime //Shortened to fit only three variables
-    | UsersPrint of Map<string,string>*uint64*DateTime
+    | UsersPrint of Map<string,string>*int*DateTime
 
 //type TwitterMessages =
 //    | InitializeTweet of IActorRef*IActorRef
@@ -89,7 +89,7 @@ type serverEngineMessages =
 type TweetMessages = 
     | InitializeTweet of (IActorRef*IActorRef) 
     | SendTweet of (string*string*string*DateTime*IActorRef)
-    | PrintTweetStats of (Map<string,Set<string>>*Map<string,string>*uint64)
+    | PrintTwitterStats of (Map<string,Set<string>>*Map<string,string>*int)
     | AddRetweet of (string)
     | UpdateTwitterInfo of (Map<string,ActorSelection>)
 
