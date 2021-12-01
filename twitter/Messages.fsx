@@ -70,9 +70,6 @@ type UserMessages =
 //type TwitterMessages =
 //    | InitializeTweet of IActorRef*IActorRef
 //    | ServerTweet of string*string*string*DateTime*IActorRef
-type UserMessages =
-    | RefreshTwitterFeed of (string*string*string*string*DateTime)
-    | UpdateFeed of (string*string*string*string*DateTime)
 
 //All of the messages below have been shortened
 type serverEngineMessages =
@@ -110,8 +107,8 @@ type HashTagMessages =
 type MentionsMessages = 
     | InitializeMentions of (IActorRef)
     | MentionsRegister of (string*string)
-    | ParseMentions of (string*string*string*DateTime)
-    | UpdateMentionsClientPrinters of (Map<string,ActorSelection>)
+    | ReadMentions of (string*string*string*DateTime)
+    | UpdateMentionsInfo of (Map<string,ActorSelection>)
     | QueryMentions of (string*string*string*DateTime)
 
 type FeedMessages = 

@@ -58,8 +58,8 @@ let Tweeter(mailbox:Actor<_>) =
             twitterInfo.[clientID] <! sprintf "Tweet: %s" message
 
             hashtag <! ReadHashTag(clientID, userID, message)
-            let command = "tweet"
-            user <! RefreshTwitterFeed(clientID, userID, message, command, time)
+            let command = "tweet" 
+            user <! UpdateFeeds(userID, message, command, time)
         | AddRetweet userID ->
             let currentNumTweet = numUserTweets.[userID] + 1
             numUserTweets <- Map.remove userID numUserTweets
@@ -97,8 +97,8 @@ let Retweeter (mailbox:Actor<_>) =
             let randomTweet = feed.[userID].[r.Next(feed.[userID].Length)]
             twitterInfo.[clientID] <! sprintf "%s Retweeted: %s" userID
 
-            let command = "retweet"
-            user <! UpdateFeeds(clientID, userID, randomTweet, command, DateTime.Now)
+            let command = "retweet" 
+            user <! UpdateFeeds(userID, randomTweet, command, DateTime.Now)
             tweeter <! AddRetweet userID
         | UpdateRetweetInfo info ->
             twitterInfo <- info 
@@ -108,11 +108,12 @@ let Retweeter (mailbox:Actor<_>) =
 let HashTag (mailbox:Actor<_>) = 
     let mutable twitterInfo = Map.empty
     let mutable hashtags = Map.empty
-    let mutable numQuery = 0
+    let mutable numQuery = 1.0
+    let mutable totalTime = 1.0
 
     let rec loop() = actor {
         let! msg = mailbox.Receive()
-
+        let initTime = DateTime.Now
         match msg with
         | ReadHashTag (clientID, userID, message) ->
             let tweet = message.Split ' '
@@ -127,7 +128,7 @@ let HashTag (mailbox:Actor<_>) =
                         hashtags <- Map.add tag tempList hashtags
         | QueryHashtag (clientID, userID, hashtag, time) ->
                 if twitterInfo.ContainsKey clientID then
-                    numQuery <- numQuery + 1
+                    numQuery <- numQuery + 1.0
                     if hashtags.ContainsKey hashtag then
                         let mutable hashtagSize = hashtags.[hashtag].Length
                         let mutable tag = ""
@@ -136,6 +137,7 @@ let HashTag (mailbox:Actor<_>) =
                         twitterInfo.[clientID] <! sprintf "Hastag Query %s by %s" hashtag userID
                     else
                         twitterInfo.[clientID] <! sprintf "Hashtag Query Failed by %s" userID
+                    totalTime <- totalTime + (initTime.Subtract time).TotalMilliseconds
         | UpdateHashTagInfo info ->
             twitterInfo <- info
         return! loop()
@@ -143,18 +145,49 @@ let HashTag (mailbox:Actor<_>) =
 
 let Mentions (mailbox:Actor<_>) = 
     let mutable twitterInfo = Map.empty
+    let mutable users = Set.empty
     let mutable mentions = Map.empty
-    let mutable numQuery = 0
+    let mutable numQuery = 0.0
     let mutable tweeter = mailbox.Self
+    let mutable totalTime = 1.0
 
     let rec loop() = actor {
         let! msg = mailbox.Receive()
-
+        let initTime = DateTime.Now
         match msg with
         | InitializeMentions _tweeter ->
             tweeter <- _tweeter
-        
-
+        | MentionsRegister(clientID, userID) ->
+            users <- Set.add userID users
+            mentions <- Map.add userID List.empty mentions
+        | ReadMentions (clientID, userID, tweet, timeStamp) ->
+            if users.Contains userID then
+                let p = tweet.Split ' '
+                let mutable found = false
+                for parse in p do
+                    if parse.[0] = '@' then
+                        found <- true
+                        let pm = parse.[1 .. (parse.Length-1)]
+                        if users.Contains pm then
+                            let mutable tempList = mentions.[pm]
+                            tempList <- tweet :: tempList
+                            mentions <- Map.remove pm mentions
+                            mentions <- Map.add pm tempList mentions
+                            tweeter <! SendTweet(clientID, userID, tweet, timeStamp, mailbox.Sender())
+                if not found then
+                    tweeter <! SendTweet(clientID, userID, tweet, timeStamp, mailbox.Sender())
+        | QueryMentions (clientID, userID, mentionedUser, timeStamp) ->
+            if twitterInfo.ContainsKey clientID then
+                numQuery <- numQuery + 1.0
+                if mentions.ContainsKey mentionedUser then
+                    let mutable str = ""
+                    for i in [0 .. mentions.[mentionedUser].Length] do
+                        str <- mentions.[mentionedUser].[i] + "\n"
+                totalTime <- totalTime + (initTime.Subtract timeStamp).TotalMilliseconds
+                let avg = totalTime / numQuery
+                mailbox.Sender() <! ("Stats", "", "QueryMentions", (avg |> string), DateTime.Now)
+        | UpdateMentionsInfo info ->
+            twitterInfo <- info
         return! loop()
     } loop()
 
@@ -202,6 +235,7 @@ let UserServer(mailbox:Actor<_>) =
     let mutable userActions = 0
     let rec loop() = actor {
         let! msg = mailbox.Receive()
+        let initTime = DateTime.Now
         match msg with
         | Init(reTweeter, _feed, _tweeter) -> //(IActorRef*IActorRef*IActorRef)
             retweeter <- reTweeter
@@ -312,7 +346,7 @@ let serverEngine(mailbox:Actor<_>) =
             ()
         | Tweet(clientID, userID, tweet, timeStamp) ->
             clientActions <- clientActions + 1
-            mentions <! ParseMentions(clientID, userID, tweet, timeStamp)
+            mentions <! ReadMentions(clientID, userID, tweet, timeStamp)
             ()
         | ReTweet(clientID, userId, timeStamp) ->
             clientActions <- clientActions + 1
