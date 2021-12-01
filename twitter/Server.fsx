@@ -246,7 +246,7 @@ let UserServer(mailbox:Actor<_>) =
             userActions <- userActions + 1
             following <- Map.add userID Set.empty following
             subscriber <- Map.add userID (subRank |> int) subscriber
-            followTime <- followTime + (timeStamp.Subtract timeStamp).TotalMilliseconds
+            followTime <- followTime + (initTime.Subtract timeStamp).TotalMilliseconds
             twitterInfo.[userID] <! sprintf "User %s Registered" userID
             ()
         | UserMessages.Follow(clientID, userID, followID, timeStamp) -> //(string*string*string*DateTime)\
@@ -257,19 +257,19 @@ let UserServer(mailbox:Actor<_>) =
                 following <- Map.remove followID following
                 following <- Map.add followID s following
                 twitterInfo.[userID] <! sprintf "User %s followed %s" userID followID
-            followTime <- followTime + (timeStamp.Subtract timeStamp).TotalMilliseconds
+            followTime <- followTime + (initTime.Subtract timeStamp).TotalMilliseconds
             ()
         | Offline(clientID, userID, timeStamp) -> //(string*string*DateTime)
             userActions <- userActions + 1
             numUsers <- Set.remove userID numUsers
-            followTime <- followTime + (timeStamp.Subtract timeStamp).TotalMilliseconds
+            followTime <- followTime + (initTime.Subtract timeStamp).TotalMilliseconds
             twitterInfo.[userID] <! sprintf "User %s Offline" userID
             ()
         | Online(clientID, userID, userAdmin, timeStamp) -> //(string*string*IActorRef*DateTime)
             userActions <- userActions + 1
             numUsers <- Set.add userID numUsers
             feed <! ShowFeeds(clientID, userID, userAdmin)
-            followTime <- followTime + (timeStamp.Subtract timeStamp).TotalMilliseconds
+            followTime <- followTime + (initTime.Subtract timeStamp).TotalMilliseconds
             twitterInfo.[userID] <! sprintf "User %s Online" userID
             ()
         | UpdateUserInfo info -> //(Map<string,ActorSelection>)
@@ -280,12 +280,12 @@ let UserServer(mailbox:Actor<_>) =
             for i in following.[userID] do
                 feed <! UpdateFeedTable(userID, tweetType, incomingTweet)
                 retweeter <! RetweetFeed(userID, tweetType, incomingTweet)
-            followTime <- followTime + (timeStamp.Subtract timeStamp).TotalMilliseconds
+            followTime <- followTime + (initTime.Subtract timeStamp).TotalMilliseconds
             ()
         | UsersPrint(map, performance, timeStamp) -> //(Map<string,string>*uint64*DateTime)
             userActions <- userActions + 1
             tweeter <! PrintTweetStats(following, map, performance)
-            followTime <- followTime + (timeStamp.Subtract timeStamp).TotalMilliseconds
+            followTime <- followTime + (initTime.Subtract timeStamp).TotalMilliseconds
             ()
         | _ -> ()
         return! loop()
@@ -370,4 +370,6 @@ let serverEngine(mailbox:Actor<_>) =
 
 
 
-//let boss = spawn system "Server" ServerActor Line 479
+let boss = spawn system "Server" serverEngine
+boss <! Start
+system.WhenTerminated.Wait()
