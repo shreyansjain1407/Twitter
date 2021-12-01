@@ -63,7 +63,7 @@ type UserMessages =
     | Follow of string*string*string*DateTime
     | Offline of string*string*DateTime
     | Online of string*string*IActorRef*DateTime
-    | UpdateUserClientPrinters of Map<string,ActorSelection>
+    | UpdateUserInfo of Map<string,ActorSelection>
     | UpdateFeeds of string*string*string*DateTime //Shortened to fit only three variables
     | UsersPrint of Map<string,string>*uint64*DateTime
 
