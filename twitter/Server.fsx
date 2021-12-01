@@ -244,9 +244,9 @@ let serverEngine(mailbox:Actor<_>) =
             ()
         | ReTweet(clientID, userId, timeStamp) ->
             ()
-        | serverEngineMessages.QueryMentions(clientID, userID, mentionedUser, timeStamp) ->
+        | Mention(clientID, userID, mentionedUser, timeStamp) ->
             ()
-        | QueryHashtags(clientID, userID, hashTag, timeStamp) ->
+        | HashTag(clientID, userID, hashTag, timeStamp) ->
             ()
         | ServiceStats(key, value) ->
             ()

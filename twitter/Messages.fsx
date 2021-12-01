@@ -84,8 +84,8 @@ type serverEngineMessages =
     | Follow of string*string*string*DateTime
     | Tweet of string*string*string*DateTime
     | ReTweet of string*string*DateTime
-    | QueryMentions of string*string*string*DateTime
-    | QueryHashtags of string*string*string*DateTime
+    | Mention of string*string*string*DateTime
+    | HashTag of string*string*string*DateTime
     | ServiceStats of string*string
     | PrintStats
 

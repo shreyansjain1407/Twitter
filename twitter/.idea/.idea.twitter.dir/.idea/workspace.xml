@@ -6,6 +6,19 @@
   <component name="ChangeListManager">
     <list default="true" id="e089b8fa-05fd-42dc-85bf-9bac15c71cf3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.twitter.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.twitter.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client.fsx" beforeDir="false" afterPath="$PROJECT_DIR$/Client.fsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Messages.fsx" beforeDir="false" afterPath="$PROJECT_DIR$/Messages.fsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server.fsx" beforeDir="false" afterPath="$PROJECT_DIR$/Server.fsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Debug/netcoreapp3.1/Twitter.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/netcoreapp3.1/Twitter.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Debug/netcoreapp3.1/Twitter.fsproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/netcoreapp3.1/Twitter.fsproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Debug/netcoreapp3.1/Twitter.fsproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/netcoreapp3.1/Twitter.fsproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Twitter.fsproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Twitter.fsproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Twitter.fsproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Twitter.fsproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Twitter.fsproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Twitter.fsproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/obj/rider.project.restore.info" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,7 +46,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager">
@@ -74,6 +87,7 @@
       <workItem from="1638113661815" duration="6486000" />
       <workItem from="1638148069839" duration="6287000" />
       <workItem from="1638226867304" duration="272000" />
+      <workItem from="1638318488360" duration="4320000" />
     </task>
     <servers />
   </component>
