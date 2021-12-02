@@ -392,6 +392,10 @@ let serverEngine(mailbox:Actor<_>) =
             tweeter <! UpdateTwitterInfo(clientInfo)
             retweeter <! UpdateRetweetInfo(clientInfo)
             hashtag <! UpdateHashTagInfo(clientInfo)
+            mentions <! UpdateMentionsInfo(clientInfo)
+            feed <! UpdateFeedInfo(clientInfo)
+            user <! UpdateUserInfo(clientInfo)
+            mailbox.Sender() <! ClientMessageAck
         | UserRegister(clientID, userID, count, timeStamp) ->
             printfn "Printed At: UserRegister"
             clientActions <- clientActions + 1
