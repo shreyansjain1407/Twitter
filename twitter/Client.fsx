@@ -71,7 +71,7 @@ let User (mailbox:Actor<_>) =
             popularHashTags <- popularHashTags'
             interval <- (float) time
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(50.), mailbox.Self, Action)
-            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.), mailbox.Self, Tweet)
+            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.), mailbox.Self, ClientTweet)
         | Action ->
             printfn "Printed at: Action"
             if onlineStatus then
@@ -122,7 +122,7 @@ let User (mailbox:Actor<_>) =
                     let tweet = sprintf $"{curID} tweeted tweet_{curTweets} with hashtag #{ht} and mentioned @{toBeMentioned}"
                     server <! ("Tweet",ClientID, curID, tweet, curTime)
                 | _ -> ()
-                system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(interval), mailbox.Self, Tweet)
+                system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(interval), mailbox.Self, ClientTweet)
         | RequestStatOffline ->
             printfn "Printed at: RequestStatOffline"
             onlineStatus <- false
@@ -130,7 +130,7 @@ let User (mailbox:Actor<_>) =
             printfn "Printed at: RequestStatOnline"
             onlineStatus <- true
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(100.0), mailbox.Self, Action)
-            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(101.0), mailbox.Self, Tweet)
+            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(101.0), mailbox.Self, ClientTweet)
         | _ -> ()
         return! loop()
     }
@@ -174,7 +174,7 @@ let UserAdmin (mailbox:Actor<_>) =
                 let key = (string) users.[i-1]
                 subsrank <- subsrank |> Map.add (sprintf "%s_%s" ClientID key) ((totalUsers-1)/i)
                 intervals <- intervals |> Map.add (sprintf "%s_%s" ClientID key) i
-            server <! ClientRegister(ClientID, curIP, curPort)
+            server <! ("ClientRegister",ClientID, curIP, curPort, DateTime.Now)
             for i in [1..totalUsers] do
                 list_Clients <- (string) i :: list_Clients
         | "ClientMessageAck" ->
@@ -188,7 +188,7 @@ let UserAdmin (mailbox:Actor<_>) =
             let mutable curID = sprintf "%s_%s" ClientID ((string) list_Users.[curID' - 1])
             let curLocation = spawn system (sprintf "User_%s" curID) User
             userLocation <- userLocation |> Map.add curID curLocation
-            server <! UserRegister(ClientID, curID, (string)subsrank.[curID], DateTime.Now)
+            server <! ("UserRegister",ClientID, curID, (string)subsrank.[curID], DateTime.Now)
             registeredUsers <- curID :: registeredUsers
             if curID' < totalUsers then
                 system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.0), mailbox.Self, UserRegistration(string (curID' + 1)))

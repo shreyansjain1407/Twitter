@@ -22,13 +22,13 @@ type Client_Messages =
     | Action
     | ClientTweet
     
-type ServerToUserAdmin =
-    | Commence of string*string*string*string
-    | ClientMessageAck
-    | UserRegistration of string
-    | UserRegistrationAck of string*string
-    | SetStatusOffline
-    | OnlineAcknowledgement of string
+//type ServerToUserAdmin =
+//    | Commence of string*string*string*string
+//    | ClientMessageAck
+//    | UserRegistration of string
+//    | UserRegistrationAck of string*string
+//    | SetStatusOffline
+//    | OnlineAcknowledgement of string
 
 type TweetMessages = 
     | InitializeTweet of IActorRef*IActorRef
