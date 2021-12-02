@@ -32,7 +32,7 @@ let configuration =
     }" curIP)
 
 let system = ActorSystem.Create("ServerSideTwitter", configuration)
-let path = "stats.txt"
+
 let Tweeter(mailbox:Actor<_>) = 
     let mutable numTweets = 0
     let mutable numUserTweets = Map.empty
@@ -77,7 +77,7 @@ let Tweeter(mailbox:Actor<_>) =
             twitterInfo <- info
         | PrintTwitterStats (follows, map, performance) ->
             printfn "Printed At: PrintTwitterStats"
-            
+            let path = "stats.txt"
             File.WriteAllText(path, "")
             File.AppendAllText(path, "\n"+ initTime.ToString())
             File.AppendAllText(path, sprintf "\nNumber User requests per second = %u" performance)
@@ -392,16 +392,12 @@ let serverEngine(mailbox:Actor<_>) =
             tweeter <! UpdateTwitterInfo(clientInfo)
             retweeter <! UpdateRetweetInfo(clientInfo)
             hashtag <! UpdateHashTagInfo(clientInfo)
-            mentions <! UpdateMentionsInfo(clientInfo)
-            feed <! UpdateFeedInfo(clientInfo)
-            user <! UpdateUserInfo(clientInfo)
-            mailbox.Sender() <! ClientMessageAck
         | UserRegister(clientID, userID, count, timeStamp) ->
             printfn "Printed At: UserRegister"
             clientActions <- clientActions + 1
             user <! Register(clientID, userID, timeStamp)
             mentions <! MentionsRegister(clientID, userID)
-            mailbox.Sender() <! UserRegistrationAck(userID, "ACK")
+
 
         | GoOnline(clientID, userID, timeStamp) ->
             printfn "Printed At: GoOnline"
