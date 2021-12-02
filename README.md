@@ -40,7 +40,9 @@ clients.
 The program handled itself well as the number of users increased. The maximum amount of 
 simulated users that we tested with was 40000 users. As the number of users increased, so 
 did the average time for each server action requested take to complete. Obviously the 
-amount of tweets/retweets/hashtags/mentions all went up as well. 
+amount of tweets/retweets/hashtags/mentions all went up as well. Below is a table 
+showcasing the average amoun of time in milliseconds to complete a request versus the 
+number of users with one client running.
 
 | Num Users | Tweets | Retweets | HashTag Query | Mention Query |
 | ----------|--------|----------|---------------|---------------|
