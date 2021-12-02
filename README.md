@@ -49,7 +49,11 @@ that were successfully handled decreased. During the period of disconnection thi
 reversed in that actions were taken much more swiftly and the server could handle the
 number of requests as they decreased.
 
-
+We simulated a zipf distribution with the amount of subscribers. What we found was a 
+progressively significant drop off in the amount of tweets/retweets made by users as 
+the number of subscribers decreased. In this model, the vast majority of all tweets made
+are made by the most subscribed users, with the amount of tweets practically halving
+as the number of subscribers went down.
 
 ## Other considerations
 The client and engine were in fact separated in different processes split into client.fsx
