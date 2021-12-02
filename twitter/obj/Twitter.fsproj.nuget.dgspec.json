@@ -38,6 +38,11 @@
               "version": "[1.4.28, )",
               "generatePathProperty": true
             },
+            "Akkling": {
+              "target": "Package",
+              "version": "[0.12.0, )",
+              "generatePathProperty": true
+            },
             "FSharp.Core": {
               "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
               "target": "Package",

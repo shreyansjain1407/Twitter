@@ -3,6 +3,7 @@
 #r "nuget: Akka.FSharp"
 #r "nuget: Akka.Remote"
 #r "nuget: Akka.TestKit"
+#r "nuget: Akkling"
 #load "Messages.fsx"
 #load "Functions.fsx"
 
@@ -13,6 +14,8 @@ open Akka.Configuration
 open System.IO
 open System.Text
 open Messages
+open Akkling
+
 
 let curIP = (string) fsi.CommandLineArgs.[1] //This is the IP of the sever
 
@@ -24,12 +27,13 @@ let configuration =
             actor {
                 provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""
             }
-            remote.helios.tcp {
-                transport-protocol = tcp
-                port = 8776
-                hostname = %s
+            remote{
+                helios.tcp {
+                    port = 8776
+                    hostname = localhost
+                }
             }
-    }" curIP)
+        }")
 
 let system = ActorSystem.Create("ServerSideTwitter", configuration)
 let path = "stats.txt"
@@ -450,6 +454,7 @@ let serverEngine(mailbox:Actor<_>) =
             let mutable performance = 0
             let timeSpan = (DateTime.Now-initializedTimeStamp).TotalSeconds |> int
             if clientActions > 0 then
+                printfn "Printed from inside printstats if statement"
                 performance <- clientActions/timeSpan
                 user <! UsersPrint(stats, performance, DateTime.Now)
                 printfn "Server uptime = %u sec, requests = %u, Avg requests = %u per second" timeSpan clientActions performance
@@ -462,6 +467,6 @@ let serverEngine(mailbox:Actor<_>) =
 
 
 
-let boss = spawn system "Server" serverEngine
+let boss = spawn system "serverEngine" serverEngine
 boss <! Start
 system.WhenTerminated.Wait()

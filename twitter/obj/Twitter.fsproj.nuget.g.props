@@ -15,5 +15,6 @@
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <PkgFSharp_Core Condition=" '$(PkgFSharp_Core)' == '' ">C:\Users\shrey\.nuget\packages\fsharp.core\6.0.1</PkgFSharp_Core>
     <PkgAkka Condition=" '$(PkgAkka)' == '' ">C:\Users\shrey\.nuget\packages\akka\1.4.28</PkgAkka>
+    <PkgAkkling Condition=" '$(PkgAkkling)' == '' ">C:\Users\shrey\.nuget\packages\akkling\0.12.0</PkgAkkling>
   </PropertyGroup>
 </Project>

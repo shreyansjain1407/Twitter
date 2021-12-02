@@ -30,9 +30,9 @@ let configuration =
             remote.helios.tcp {
                 transport-protocol = tcp
                 port = %s
-                hostname = %s
+                hostname = localhost
             }
-    }" curPort curIP)
+    }" curPort)
 let system = ActorSystem.Create("ClientSideTwitter", configuration)
 
 //Printer: To print messages / outputs
@@ -62,6 +62,7 @@ let User (mailbox:Actor<_>) =
         let! msg = mailbox.Receive()
         match msg with
         | UserReady(userID', list_Clients', server', totalUsers', curClientID', popularHashTags', time) ->
+            printfn "Printed at: UserReady"
             curID <- userID'
             list_Clients <- list_Clients'
             server <- server'
@@ -72,6 +73,7 @@ let User (mailbox:Actor<_>) =
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(50.), mailbox.Self, Action)
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.), mailbox.Self, Tweet)
         | Action ->
+            printfn "Printed at: Action"
             if onlineStatus then
                 let actions = ["follow";"queryM";"queryHT"]
                 match actions.[random.Next(actions.Length)] with
@@ -94,6 +96,7 @@ let User (mailbox:Actor<_>) =
                     ()
                 | _ -> ()
         | ClientTweet ->
+            printfn "Printed at: ClientTweet"
             if onlineStatus then
                 let tweets = ["tweet";"retweet";"hashtweet";"hashmention"]
                 let curTime = DateTime.Now
@@ -121,8 +124,10 @@ let User (mailbox:Actor<_>) =
                 | _ -> ()
                 system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(interval), mailbox.Self, Tweet)
         | RequestStatOffline ->
+            printfn "Printed at: RequestStatOffline"
             onlineStatus <- false
         | RequestStatOnline ->
+            printfn "Printed at: RequestStatOnline"
             onlineStatus <- true
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(100.0), mailbox.Self, Action)
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(101.0), mailbox.Self, Tweet)
@@ -143,7 +148,7 @@ let UserAdmin (mailbox:Actor<_>) =
     let mutable intervals = Map.empty
     let mutable list_Users = []
     let mutable subsrank = Map.empty
-    let server = system.ActorSelection(sprintf "akka.tcp://ServerSideTwitter@%s:8776/user/Server/" mainServerIP)
+    let server = system.ActorSelection(sprintf "akka.tcp://ServerSideTwitter@%s:8776/user/serverEngine/" mainServerIP)
     let popularHashTags = ["lockdown";"metoo";"covid19";"blacklivesmatter";"crypto";"crowdfunding";"giveaway";"contest";
                         "blackhistorymonth";"womenshistorymonth";"cryptocurrency";"womensday";"happybirthday";
                         "authentication";"USelections";"bidenharris";"internationalwomensday";"influencermarketing";
@@ -154,7 +159,8 @@ let UserAdmin (mailbox:Actor<_>) =
         let! msg = mailbox.Receive()
         match msg with
         | Commence(id',totalUsers',totalClients',curPort') ->
-            printfn $"Operations Commence at Client: {ClientID}"
+            printfn "Printed at: Commence"
+            printfn $"Operations Commence at Client: {id'}"
             ClientID <- id'
             totalUsers <- (int32) totalUsers'
             totalClients <- (int32) totalClients'
@@ -170,9 +176,11 @@ let UserAdmin (mailbox:Actor<_>) =
             for i in [1..totalUsers] do
                 list_Clients <- (string) i :: list_Clients
         | ClientMessageAck ->
+            printfn "Printed at: ClientMessageAck"
             mailbox.Self <! UserRegistration("1")
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(8.0), mailbox.Self, SetStatusOffline)
         | UserRegistration a ->
+            printfn "Printed at: UserRegistration"
             let curID' = (int) a
             let mutable curID = sprintf "%s_%s" ClientID ((string) list_Users.[curID' - 1])
             let curLocation = spawn system (sprintf "User_%s" curID) User
@@ -182,6 +190,7 @@ let UserAdmin (mailbox:Actor<_>) =
             if curID' < totalUsers then
                 system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.0), mailbox.Self, UserRegistration(string (curID' + 1)))
         | UserRegistrationAck(incomingID,incomingMsg) ->
+            printfn "Printed at: UserRegistrationAck"
             
             printfn $"{incomingMsg}"
             let temp =
@@ -191,6 +200,7 @@ let UserAdmin (mailbox:Actor<_>) =
                     totalUsers/100
             userLocation.[incomingID] <! UserReady(incomingID, list_Clients, server, totalUsers, ClientID, popularHashTags, temp*intervals.[incomingID])
         | SetStatusOffline ->
+            printfn "Printed at: SetStatusOffline"
             let mutable total = registeredUsers.Length
             let mutable set = Set.empty
             for i in [1..total] do
@@ -206,6 +216,7 @@ let UserAdmin (mailbox:Actor<_>) =
             offlineUsers <- set
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(8.0), mailbox.Self, SetStatusOffline)
         | OnlineAcknowledgement incomingID ->
+            printfn "Printed at: OnlineAcknowledgement"
             userLocation.[incomingID] <! RequestStatOnline
         | _ -> ()
         return! loop()
@@ -213,6 +224,7 @@ let UserAdmin (mailbox:Actor<_>) =
     loop()
 
 let userAdmin = spawn system "UserAdmin" UserAdmin
+printfn $"{curClientID} + {totalUsers} + {totalClients} + {curPort}"
 userAdmin <! Commence(curClientID, totalUsers, totalClients, curPort)
 
 system.WhenTerminated.Wait()
