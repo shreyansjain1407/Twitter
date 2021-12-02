@@ -14,6 +14,10 @@ The client takes in an IP address, port, clientID, total users, total clients, a
 server IP. An example of running it would be
 
     dotnet fsi client.fsx localhost 4521 1 1000 1 localhost
+    OR if multiple clients:
+    dotnet fsi client.fsx localhost 4521 1 3000 3 localhost
+    dotnet fsi client.fsx localhost 4522 2 3000 3 localhost
+    dotnet fsi client.fsx localhost 4523 3 3000 3 localhost
 
 ## Functionality
 The program is able to do all of the following:
