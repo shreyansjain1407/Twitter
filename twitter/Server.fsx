@@ -1,6 +1,3 @@
-open Akka.Configuration
-open Messages
-
 #time "on"
 #r "nuget: Akka"
 #r "nuget: Akka.FSharp"
@@ -12,8 +9,10 @@ open Messages
 open System
 open Akka.Actor
 open Akka.FSharp
+open Akka.Configuration
 open System.IO
 open System.Text
+open Messages
 
 let curIP = (string) fsi.CommandLineArgs.[1] //This is the IP of the sever
 
