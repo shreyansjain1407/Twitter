@@ -1,5 +1,5 @@
 
-#r "nuget: Akka.FSharp"
+#r "nuget: Akka"
 #r "nuget: Akka.FSharp"
 #r "nuget: Akka.Remote"
 #r "nuget: Akka.TestKit"

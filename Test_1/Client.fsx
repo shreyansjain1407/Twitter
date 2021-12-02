@@ -2,7 +2,7 @@ open Akka.Configuration
 open Messages
 
 #time "on"
-#r "nuget: Akka"
+#r "nuget: Akka.FSharp"
 #r "nuget: Akka.FSharp"
 #r "nuget: Akka.Remote"
 #r "nuget: Akka.TestKit"
