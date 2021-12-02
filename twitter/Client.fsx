@@ -143,7 +143,7 @@ let UserAdmin (mailbox:Actor<_>) =
     let mutable intervals = Map.empty
     let mutable list_Users = []
     let mutable subsrank = Map.empty
-    let server = system.ActorSelection(sprintf "akka.tcp://ServerSideTwitter@%s:8776/user/Server" mainServerIP)
+    let server = system.ActorSelection(sprintf "akka.tcp://ServerSideTwitter@%s:8776/user/Server/" mainServerIP)
     let popularHashTags = ["lockdown";"metoo";"covid19";"blacklivesmatter";"crypto";"crowdfunding";"giveaway";"contest";
                         "blackhistorymonth";"womenshistorymonth";"cryptocurrency";"womensday";"happybirthday";
                         "authentication";"USelections";"bidenharris";"internationalwomensday";"influencermarketing";
@@ -166,7 +166,7 @@ let UserAdmin (mailbox:Actor<_>) =
                 let key = (string) users.[i-1]
                 subsrank <- subsrank |> Map.add (sprintf "%s_%s" ClientID key) ((totalUsers-1)/i)
                 intervals <- intervals |> Map.add (sprintf "%s_%s" ClientID key) i
-            server <! ("ClientRegister",ClientID, curIP, curPort,DateTime.Now)
+            server <! ClientRegister(ClientID, curIP, curPort)
             for i in [1..totalUsers] do
                 list_Clients <- (string) i :: list_Clients
         | ClientMessageAck ->
@@ -177,7 +177,7 @@ let UserAdmin (mailbox:Actor<_>) =
             let mutable curID = sprintf "%s_%s" ClientID ((string) list_Users.[curID' - 1])
             let curLocation = spawn system (sprintf "User_%s" curID) User
             userLocation <- userLocation |> Map.add curID curLocation
-            server <! ("UserRegister", ClientID, curID, (string)subsrank.[curID], DateTime.Now)
+            server <! UserRegister(ClientID, curID, (string)subsrank.[curID], DateTime.Now)
             registeredUsers <- curID :: registeredUsers
             if curID' < totalUsers then
                 system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.0), mailbox.Self, UserRegistration(string (curID' + 1)))
@@ -197,11 +197,11 @@ let UserAdmin (mailbox:Actor<_>) =
                 let mutable upcomingOff = registeredUsers.[Random().Next(registeredUsers.Length)]
                 while offlineUsers.Contains(upcomingOff) || set.Contains(upcomingOff) do
                     upcomingOff <- registeredUsers.[Random().Next(registeredUsers.Length)]
-                server <! ("GoOffline", ClientID, upcomingOff, "", DateTime.Now)
+                server <! GoOffline(ClientID, upcomingOff, DateTime.Now)
                 userLocation.[upcomingOff] <! SetStatusOffline
                 set <- set |> Set.add upcomingOff
             for offlineClient in offlineUsers do
-                server <! ("GoOnline", ClientID, offlineClient, "", DateTime.Now)
+                server <! GoOnline(ClientID, offlineClient, DateTime.Now)
             offlineUsers <- Set.empty
             offlineUsers <- set
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(8.0), mailbox.Self, SetStatusOffline)
