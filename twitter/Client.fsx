@@ -33,7 +33,7 @@ let configuration =
                 hostname = %s
             }
     }" curPort curIP)
-let system = ActorSystem.Create("ClientSide_Twitter", configuration)
+let system = ActorSystem.Create("ClientSideTwitter", configuration)
 
 //Printer: To print messages / outputs
 let Printer(mailbox: Actor<_>) =

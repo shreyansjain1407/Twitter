@@ -31,7 +31,7 @@ let configuration =
             }
     }" curIP)
 
-let system = ActorSystem.Create("ServerSide_Twitter", configuration)
+let system = ActorSystem.Create("ServerSideTwitter", configuration)
 
 let Tweeter(mailbox:Actor<_>) = 
     let mutable numTweets = 0
