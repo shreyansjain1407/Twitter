@@ -401,7 +401,7 @@ let serverEngine(mailbox:Actor<_>) =
             clientActions <- clientActions + 1
             user <! Register(clientID, userID, timeStamp)
             mentions <! MentionsRegister(clientID, userID)
-
+            mailbox.Sender() <! UserRegistrationAck(userID, "ACK")
 
         | GoOnline(clientID, userID, timeStamp) ->
             printfn "Printed At: GoOnline"
