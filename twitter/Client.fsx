@@ -33,7 +33,7 @@ let configuration =
                 hostname = %s
             }
     }" curPort curIP)
-let system = ActorSystem.Create("ClientSide_Twitter", configuration)
+let system = ActorSystem.Create("ClientSideTwitter", configuration)
 
 //Printer: To print messages / outputs
 let Printer(mailbox: Actor<_>) =
@@ -143,7 +143,7 @@ let UserAdmin (mailbox:Actor<_>) =
     let mutable intervals = Map.empty
     let mutable list_Users = []
     let mutable subsrank = Map.empty
-    let server = system.ActorSelection(sprintf "akka.tcp://ServerSide_Twitter@%s:8776/user/Server" mainServerIP)
+    let server = system.ActorSelection(sprintf "akka.tcp://ServerSideTwitter@%s:8776/user/Server" mainServerIP)
     let popularHashTags = ["lockdown";"metoo";"covid19";"blacklivesmatter";"crypto";"crowdfunding";"giveaway";"contest";
                         "blackhistorymonth";"womenshistorymonth";"cryptocurrency";"womensday";"happybirthday";
                         "authentication";"USelections";"bidenharris";"internationalwomensday";"influencermarketing";

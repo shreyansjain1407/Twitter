@@ -31,7 +31,7 @@ let configuration =
             }
     }" curIP)
 
-let system = ActorSystem.Create("ServerSide_Twitter", configuration)
+let system = ActorSystem.Create("ServerSideTwitter", configuration)
 
 let Tweeter(mailbox:Actor<_>) = 
     let mutable numTweets = 0
@@ -357,7 +357,7 @@ let serverEngine(mailbox:Actor<_>) =
             ()
         | ClientRegister(clientID, clientIP, clientPort) -> 
             clientActions <- clientActions + 1
-            let clientPort = system.ActorSelection(sprintf "akka.tcp://ClientSide_Twitter@%s:%s/user/Printer" clientIP clientPort)
+            let clientPort = system.ActorSelection(sprintf "akka.tcp://ClientSideTwitter@%s:%s/user/Printer" clientIP clientPort)
             clientInfo <- Map.add clientID clientPort clientInfo
             tweeter <! UpdateTwitterInfo(clientInfo)
             retweeter <! UpdateRetweetInfo(clientInfo)
