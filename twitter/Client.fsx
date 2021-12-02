@@ -157,10 +157,10 @@ let UserAdmin (mailbox:Actor<_>) =
 //    =======================================================================
     let rec loop() = actor {
         let! (msg:obj) = mailbox.Receive()
-        let (messageType,_,_,_,_) : Tuple<string,string,string,string,DateTime> = downcast msg
-        match msg with
+        let (messageType,_,_,_,_) : Tuple<string,string,string,string,string> = downcast msg
+        match messageType with
         | "Commence" ->
-            let (_,id',totalUsers',totalClients',curPort') : Tuple<string,string,string,string,DateTime> = downcast msg
+            let (_,id',totalUsers',totalClients',curPort') : Tuple<string,string,string,string,string> = downcast msg
             printfn "Printed at: Commence"
             printfn $"Operations Commence at Client: {id'}"
             ClientID <- id'
@@ -191,7 +191,7 @@ let UserAdmin (mailbox:Actor<_>) =
             server <! ("UserRegister",ClientID, curID, (string)subsrank.[curID], DateTime.Now)
             registeredUsers <- curID :: registeredUsers
             if curID' < totalUsers then
-                system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.0), mailbox.Self, UserRegistration(string (curID' + 1)))
+                system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.0), mailbox.Self, ("UserRegistration",string (curID' + 1),"","",""))
         | "UserRegistrationAck" ->
             let (_,incomingID,incomingMsg,_,_) : Tuple<string,string,string,string,string> = downcast msg 
             printfn "Printed at: UserRegistrationAck"
@@ -212,7 +212,7 @@ let UserAdmin (mailbox:Actor<_>) =
                 while offlineUsers.Contains(upcomingOff) || set.Contains(upcomingOff) do
                     upcomingOff <- registeredUsers.[Random().Next(registeredUsers.Length)]
                 server <! ("GoOffline",ClientID, upcomingOff,"",DateTime.Now)
-                userLocation.[upcomingOff] <! SetStatusOffline
+                userLocation.[upcomingOff] <! ("SetStatusOffline","","","","")
                 set <- set |> Set.add upcomingOff
             for offlineClient in offlineUsers do
                 server <! ("GoOnline",ClientID, offlineClient, "", DateTime.Now)
