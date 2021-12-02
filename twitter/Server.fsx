@@ -3,7 +3,6 @@
 #r "nuget: Akka.FSharp"
 #r "nuget: Akka.Remote"
 #r "nuget: Akka.TestKit"
-#r "nuget: Akkling"
 #load "Messages.fsx"
 #load "Functions.fsx"
 
@@ -14,8 +13,6 @@ open Akka.Configuration
 open System.IO
 open System.Text
 open Messages
-open Akkling
-
 
 let curIP = (string) fsi.CommandLineArgs.[1] //This is the IP of the sever
 
@@ -27,13 +24,12 @@ let configuration =
             actor {
                 provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""
             }
-            remote{
-                helios.tcp {
-                    port = 8776
-                    hostname = localhost
-                }
+            remote.helios.tcp {
+                transport-protocol = tcp
+                port = 8776
+                hostname = %s
             }
-        }")
+    }" curIP)
 
 let system = ActorSystem.Create("ServerSideTwitter", configuration)
 let path = "stats.txt"

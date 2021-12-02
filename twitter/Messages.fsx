@@ -59,25 +59,25 @@ type serverEngineMessages =
     | PrintStats
 
 type TweetMessages = 
-    | InitializeTweet of (IActorRef*IActorRef) 
-    | SendTweet of (string*string*string*DateTime*IActorRef)
-    | PrintTwitterStats of (Map<string,Set<string>>*Map<string,string>*int)
-    | AddRetweet of (string)
-    | UpdateTwitterInfo of (Map<string,ActorSelection>)
+    | InitializeTweet of IActorRef*IActorRef
+    | SendTweet of string*string*string*DateTime*IActorRef
+    | PrintTwitterStats of Map<string,Set<string>>*Map<string,string>*int
+    | AddRetweet of string
+    | UpdateTwitterInfo of Map<string,ActorSelection>
 
 type RetweetMessages = 
-    | InitializeRetweet of (IActorRef*IActorRef)
-    | Retweet of (string*string*DateTime)
-    | RetweetFeed of (string*string*string)
-    | UpdateRetweetInfo of (Map<string,ActorSelection>)
+    | InitializeRetweet of IActorRef*IActorRef
+    | Retweet of string*string*DateTime
+    | RetweetFeed of string*string*string
+    | UpdateRetweetInfo of Map<string,ActorSelection>
 
 type HashTagMessages = 
-    | ReadHashTag of (string*string*string)
-    | QueryHashtag of (string*string*string*DateTime)
-    | UpdateHashTagInfo of (Map<string,ActorSelection>)
+    | ReadHashTag of string*string*string
+    | QueryHashtag of string*string*string*DateTime
+    | UpdateHashTagInfo of Map<string,ActorSelection>
     
 type MentionsMessages = 
-    | InitializeMentions of (IActorRef)
+    | InitializeMentions of IActorRef
     | MentionsRegister of (string*string)
     | ReadMentions of (string*string*string*DateTime)
     | UpdateMentionsInfo of (Map<string,ActorSelection>)
