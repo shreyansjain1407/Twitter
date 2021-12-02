@@ -15,7 +15,7 @@ open Akka.FSharp
 open System.IO
 open System.Text
 
-let curIP = fsi.CommandLineArgs.[1] |> string //This is the IP of the sever
+let curIP = (string) fsi.CommandLineArgs.[1] //This is the IP of the sever
 
 let configuration =
     ConfigurationFactory.ParseString(
@@ -41,7 +41,6 @@ let Tweeter(mailbox:Actor<_>) =
     let mutable hashtag = mailbox.Self
     let mutable user = mailbox.Self
     let mutable tweetTime = 0.0
-
     let rec loop() = actor {
         let! msg = mailbox.Receive()
         let initTime = DateTime.Now
@@ -78,15 +77,17 @@ let Tweeter(mailbox:Actor<_>) =
             File.WriteAllText(path, "")
             File.AppendAllText(path, "\n"+ initTime.ToString())
             File.AppendAllText(path, sprintf "\nNumber User requests per second = %u" performance)
-            File.AppendAllText(path, "\Average time for service:")
+            File.AppendAllText(path, "Average time for service:")
             for s in map do
                 File.AppendAllText(path, sprintf "\n%s = %s" s.Key s.Value)
             File.AppendAllText(path, sprintf "\n\nUSerID\tFollowers\tTweets\n")
             for userID in follows do
                 if numUserTweets.ContainsKey userID.Key then
-                    File.AppendAllText(path, sprintf "%s\t%s\t%s\n" userID.Key (userID.Value.Count |> String) (numUserTweets.[userID.Key] |> String))
+                    File.AppendAllText(path, sprintf "%s\t%s\t%s\n" userID.Key (userID.Value.Count |> string) (numUserTweets.[userID.Key] |> string))
+        | _ -> ()
         return! loop()
-    } loop()
+    } 
+    loop()
 
 let Retweeter (mailbox:Actor<_>) = 
     let mutable numRetweets = 0
@@ -127,7 +128,8 @@ let Retweeter (mailbox:Actor<_>) =
         | UpdateRetweetInfo info ->
             twitterInfo <- info 
         return! loop()
-    } loop()
+    }
+    loop()
 
 let HashTag (mailbox:Actor<_>) = 
     let mutable twitterInfo = Map.empty
@@ -167,7 +169,8 @@ let HashTag (mailbox:Actor<_>) =
         | UpdateHashTagInfo info ->
             twitterInfo <- info
         return! loop()
-    } loop()
+    } 
+    loop()
 
 let Mentions (mailbox:Actor<_>) = 
     let mutable twitterInfo = Map.empty
@@ -215,7 +218,8 @@ let Mentions (mailbox:Actor<_>) =
         | UpdateMentionsInfo info ->
             twitterInfo <- info
         return! loop()
-    } loop()
+    } 
+    loop()
 
 let Feed (mailbox:Actor<_>) = 
     let mutable twitterInfo = Map.empty
@@ -247,7 +251,8 @@ let Feed (mailbox:Actor<_>) =
         | UpdateFeedInfo info ->
             twitterInfo <- info
         return! loop()
-    } loop()
+    } 
+    loop()
 
 let UserServer(mailbox:Actor<_>) = 
     let mutable tweeter = mailbox.Self
@@ -318,7 +323,8 @@ let UserServer(mailbox:Actor<_>) =
         let avgTime = followTime / (float) userActions
         mailbox.Sender() <! ServiceStats("Follow/Online/Offline", (avgTime.ToString()))
         return! loop()
-    } loop()
+    } 
+    loop()
 
 let serverEngine(mailbox:Actor<_>) = 
     let mutable tweeter = mailbox.Self
@@ -352,7 +358,7 @@ let serverEngine(mailbox:Actor<_>) =
             ()
         | ClientRegister(clientID, clientIP, clientPort) -> 
             clientActions <- clientActions + 1
-            let clientPort = system.ActorSelection(sprintf "akka.tcp://ServerSide_Twitter@%s:%s/user/Printer" cur_ cmd)
+            let clientPort = system.ActorSelection(sprintf "akka.tcp://ClientSide_Twitter@%s:%s/user/Printer" clientIP clientPort)
             clientInfo <- Map.add clientID clientPort clientInfo
             tweeter <! UpdateTwitterInfo(clientInfo)
             retweeter <! UpdateRetweetInfo(clientInfo)
@@ -409,7 +415,8 @@ let serverEngine(mailbox:Actor<_>) =
             ()
         | _ -> ()
         return! loop()         
-    } loop()
+    } 
+    loop()
 
 
 

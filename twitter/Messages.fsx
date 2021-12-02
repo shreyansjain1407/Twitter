@@ -1,4 +1,4 @@
-#time "on"
+
 #r "nuget: Akka"
 #r "nuget: Akka.FSharp"
 #r "nuget: Akka.Remote"
@@ -13,8 +13,8 @@ type Client_Messages =
     | UserRegistration of int
     | SetOffline of string
     | Receive of int
-    | Acknowledgement of string*string //ProcessController as well as Client
-    | Initialize of list<string>*int //Initialize needed when following
+    | Acknowledgement of string*string 
+    | Initialize of list<string>*int 
     //Messages from various users
     | UserReady of (string*list<string>*ActorSelection*int*string*List<string>*int)
     | RequestStatOnline
@@ -29,32 +29,6 @@ type ServerToUserAdmin =
     | UserRegistrationAck of string*string
     | SetStatusOffline
     | OnlineAcknowledgement of string
-    
-//type BossMessages = 
-//    | Start of (int*int*int*string)
-//    | RegisterUser of (int)
-//    | Offline of (string)
-//    | Received of (int)
-//    | AckUserReg of (string*string)
-
-//type FollowMsg =
-//    | Initialize of list<string>*int
-    
-//type FollowMessages = 
-//    | Init of (list<string>*int)
-
-//type UserMessages = 
-//    | Ready of (string*list<string>*ActorSelection*int*string*List<string>*int)
-//    | GoOnline
-//    | GoOffline
-//    | Action
-//    | ActionTweet
-
-// Currently shall use the Acknowledgement of ProcessController    
-//type ClientMessages = 
-//    | AckUserReg of (string*string)
-//===========Messages Modified as of right now==================
-
 
 //ServerSideMessages Defined Here
 type UserMessages = 
@@ -70,8 +44,6 @@ type UserMessages =
 //type TwitterMessages =
 //    | InitializeTweet of IActorRef*IActorRef
 //    | ServerTweet of string*string*string*DateTime*IActorRef
-
-//All of the messages below have been shortened
 type serverEngineMessages =
     | Start
     | ClientRegister of string*string*string

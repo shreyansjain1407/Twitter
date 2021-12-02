@@ -144,11 +144,14 @@ let UserAdmin (mailbox:Actor<_>) =
     let mutable list_Users = []
     let mutable subsrank = Map.empty
     let server = system.ActorSelection(sprintf "akka.tcp://ServerSide_Twitter@%s:8776/user/Server" mainServerIP)
-    let popularHashTags = [] //Implement reccent hashtags here
+    let popularHashTags = ["lockdown";"metoo";"covid19";"blacklivesmatter";"crypto";"crowdfunding";"giveaway";"contest";
+                        "blackhistorymonth";"womenshistorymonth";"cryptocurrency";"womensday";"happybirthday";
+                        "authentication";"USelections";"bidenharris";"internationalwomensday";"influencermarketing";
+                        "distributedsystems";"gogators";"blackfriday";"funny";"womeninstem";"iwon";"photography";
+                        "mondaymotivation";"ootd";"vegan";"traveltuesday";"tbt"] //Implement reccent hashtags here
 //    =======================================================================
     let rec loop() = actor {
         let! msg = mailbox.Receive()
-//        let (message,_,_,_,_) : Tuple<string,string,string,string,string> = downcast msg
         match msg with
         | Commence(id',totalUsers',totalClients',curPort') ->
             printfn $"Operations Commence at Client: {ClientID}"
