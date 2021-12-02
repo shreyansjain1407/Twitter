@@ -14,8 +14,12 @@ open System.IO
 open System.Text
 open Messages
 
+//This file implements the server side of the twitter program where we have multiple actors which each do the task assigned to them
 let curIP = (string) fsi.CommandLineArgs.[1] //This is the IP of the sever
+//When being operated on multiple machines we have the need to take input from the user regarding the IP of the server
+//But since we shall be running the client on our local machine we will just use localhost for the server
 
+//Configuration used for actors in the program
 let configuration =
     ConfigurationFactory.ParseString(
         sprintf @"akka {            
@@ -27,12 +31,14 @@ let configuration =
             remote.helios.tcp {
                 transport-protocol = tcp
                 port = 8776
-                hostname = %s
+                hostname = localhost
             }
-    }" curIP)
+    }")
 
 let system = ActorSystem.Create("ServerSideTwitter", configuration)
 let path = "stats.txt"
+
+//Actor used for TweetInitialization, sending of tweets and retweets as well as updation of maps
 let Tweeter(mailbox:Actor<_>) = 
     let mutable numTweets = 0
     let mutable numUserTweets = Map.empty
@@ -45,11 +51,9 @@ let Tweeter(mailbox:Actor<_>) =
         let initTime = DateTime.Now
         match msg with
         | InitializeTweet (_user, _hashtag) ->
-            printfn "Printed At: InitializeTweet"
             user <- _user
             hashtag <- _hashtag
         | SendTweet (clientID, userID, message, time, client) ->
-            printfn "Printed At: SendTweet"
             numTweets <- numTweets + 1
 
             let mutable currentNumTweet = 0
@@ -68,31 +72,18 @@ let Tweeter(mailbox:Actor<_>) =
             let avgTime = tweetTime / (float) numTweets
             mailbox.Sender() <! ServiceStats("Tweet", avgTime.ToString())
         | AddRetweet userID ->
-            printfn "Printed At: AddRetweet"
             let currentNumTweet = numUserTweets.[userID] + 1
             numUserTweets <- Map.remove userID numUserTweets
             numUserTweets <- Map.add userID currentNumTweet numUserTweets
         | UpdateTwitterInfo info ->
-            printfn "Printed At: UpdateTwitterInfo"
             twitterInfo <- info
-        | PrintTwitterStats (follows, map, performance) ->
-            printfn "Printed At: PrintTwitterStats"
-            
-            File.WriteAllText(path, "")
-            File.AppendAllText(path, "\n"+ initTime.ToString())
-            File.AppendAllText(path, sprintf "\nNumber User requests per second = %u" performance)
-            File.AppendAllText(path, "Average time for service:")
-            for s in map do
-                File.AppendAllText(path, sprintf "\n%s = %s" s.Key s.Value)
-            File.AppendAllText(path, sprintf "\n\nUSerID\tFollowers\tTweets\n")
-            for userID in follows do
-                if numUserTweets.ContainsKey userID.Key then
-                    File.AppendAllText(path, sprintf "%s\t%s\t%s\n" userID.Key (userID.Value.Count |> string) (numUserTweets.[userID.Key] |> string))
+        
         | _ -> ()
         return! loop()
     } 
     loop()
 
+//Similar to the Tweeter but all the tasks defined for events where retweets occur
 let Retweeter (mailbox:Actor<_>) = 
     let mutable numRetweets = 0
     let mutable twitterInfo = Map.empty
@@ -106,11 +97,9 @@ let Retweeter (mailbox:Actor<_>) =
         let initTime = DateTime.Now
         match msg with
         | InitializeRetweet (_user, _tweeter) ->
-            printfn "Printed At: InitializeRetweet"
             user <- _user
             tweeter <- _tweeter
         | RetweetFeed (clientID, userID, message) ->
-            printfn "Printed At: RetweetFeed"
             let mutable tempList = []
             if feed.ContainsKey userID then
                 tempList <- feed.[userID]
@@ -118,7 +107,6 @@ let Retweeter (mailbox:Actor<_>) =
             feed <- Map.remove userID feed
             feed <- Map.add userID tempList feed
         | Retweet (clientID, userID, time) ->
-            printfn "Printed At: Retweet"
             numRetweets <- numRetweets + 1
 
             let r = Random()
@@ -133,12 +121,12 @@ let Retweeter (mailbox:Actor<_>) =
             let avgTime = rtTime / (float) numRetweets
             mailbox.Sender() <! ServiceStats("Retweet", avgTime.ToString())
         | UpdateRetweetInfo info ->
-            printfn "Printed At: UpdateRetweetInfo"
             twitterInfo <- info 
         return! loop()
     }
     loop()
 
+//Whenever a tweet with a HashTag is encountered during the String Parse, tasks are provided to this actor for processing
 let HashTag (mailbox:Actor<_>) = 
     let mutable twitterInfo = Map.empty
     let mutable hashtags = Map.empty
@@ -150,19 +138,17 @@ let HashTag (mailbox:Actor<_>) =
         let initTime = DateTime.Now
         match msg with
         | ReadHashTag (clientID, userID, message) ->
-            printfn "Printed At: ReadHashTag"
             let tweet = message.Split ' '
             for t in tweet do
                 if t.[0] = '#' then
-                        let tag = t.[1 .. (t.Length-1)]
-                        if not (hashtags.ContainsKey tag) then
-                            hashtags <- Map.add tag List.empty hashtags
-                        let mutable tempList = hashtags.[tag]
-                        tempList <- message :: tempList
-                        hashtags <- Map.remove tag hashtags
-                        hashtags <- Map.add tag tempList hashtags
+                    let tag = t.[1 .. (t.Length-1)]
+                    if not (hashtags.ContainsKey tag) then
+                        hashtags <- Map.add tag List.empty hashtags
+                    let mutable tempList = hashtags.[tag]
+                    tempList <- message :: tempList
+                    hashtags <- Map.remove tag hashtags
+                    hashtags <- Map.add tag tempList hashtags
         | QueryHashtag (clientID, userID, hashtag, time) ->
-            printfn "Printed At: QueryHashtag"
             if twitterInfo.ContainsKey clientID then
                 numQuery <- numQuery + 1.0
                 if hashtags.ContainsKey hashtag then
@@ -177,12 +163,12 @@ let HashTag (mailbox:Actor<_>) =
                 let avgTime = totalTime / numQuery
                 mailbox.Sender() <! ServiceStats("QueryHashTag", avgTime.ToString())
         | UpdateHashTagInfo info ->
-            printfn "Printed At: UpdateHashTagInfo"
             twitterInfo <- info
         return! loop()
     } 
     loop()
 
+//Actor to process a tweet with a User Mentions 
 let Mentions (mailbox:Actor<_>) = 
     let mutable twitterInfo = Map.empty
     let mutable users = Set.empty
@@ -196,14 +182,11 @@ let Mentions (mailbox:Actor<_>) =
         let initTime = DateTime.Now
         match msg with
         | InitializeMentions _tweeter ->
-            printfn "Printed At: InitializeMentions"
             tweeter <- _tweeter
         | MentionsRegister(clientID, userID) ->
-            printfn "Printed At: MentionsRegister"
             users <- Set.add userID users
             mentions <- Map.add userID List.empty mentions
         | ReadMentions (clientID, userID, tweet, timeStamp) ->
-            printfn "Printed At: ReadMentions"
             if users.Contains userID then
                 let p = tweet.Split ' '
                 let mutable found = false
@@ -220,7 +203,6 @@ let Mentions (mailbox:Actor<_>) =
                 if not found then
                     tweeter <! SendTweet(clientID, userID, tweet, timeStamp, mailbox.Sender())
         | QueryMentions (clientID, userID, mentionedUser, timeStamp) ->
-            printfn "Printed At: QueryMentions"
             if twitterInfo.ContainsKey clientID then
                 numQuery <- numQuery + 1.0
                 if mentions.ContainsKey mentionedUser then
@@ -231,12 +213,12 @@ let Mentions (mailbox:Actor<_>) =
                 let avg = totalTime / numQuery
                 mailbox.Sender() <! ServiceStats("QueryMentions", avg.ToString())
         | UpdateMentionsInfo info ->
-            printfn "Printed At: UpdateMentionsInfo"
             twitterInfo <- info
         return! loop()
     } 
     loop()
 
+//Actor to display the feed of a certain user which is presently online
 let Feed (mailbox:Actor<_>) = 
     let mutable twitterInfo = Map.empty
     let mutable feed = Map.empty
@@ -246,7 +228,6 @@ let Feed (mailbox:Actor<_>) =
 
         match msg with
         | ShowFeeds (clientID, userID, clientAdmin) ->
-            printfn "Printed At: ShowFeeds"
             if feed.ContainsKey userID then
                 let mutable top = ""
                 let tempList:List<string> = feed.[userID]
@@ -257,9 +238,8 @@ let Feed (mailbox:Actor<_>) =
                     top <- feed.[userID].[i] + "\n"
                 twitterInfo.[clientID] <! sprintf "User %s is online. Feed: %s" userID, top
             else
-                twitterInfo.[clientID] <! sprintf "User %s is offline" userID
+                twitterInfo.[clientID] <! sprintf $"User {userID} is offline"
         | UpdateFeedTable (userID, curID, message) ->
-            printfn "Printed At: UpdateFeedTable"
             let mutable tempList = []
             if feed.ContainsKey userID then
                 tempList <- feed.[userID]
@@ -267,12 +247,14 @@ let Feed (mailbox:Actor<_>) =
             feed <- Map.remove userID feed
             feed <- Map.add userID tempList feed
         | UpdateFeedInfo info ->
-            printfn "Printed At: UpdateFeedInfo"
             twitterInfo <- info
         return! loop()
     } 
     loop()
 
+//This is the actor that handles the registration of users with the server
+//This actor also keeps track of users online and offline and
+//This essentially acts as the profile of an actor
 let UserServer(mailbox:Actor<_>) = 
     let mutable tweeter = mailbox.Self
     let mutable retweeter = mailbox.Self
@@ -288,21 +270,18 @@ let UserServer(mailbox:Actor<_>) =
         let initTime = DateTime.Now
         match msg with
         | Init(reTweeter, _feed, _tweeter) -> //(IActorRef*IActorRef*IActorRef)
-            printfn "Printed At: Init"
             retweeter <- reTweeter
             feed <- _feed
             tweeter <- _tweeter 
 
         | Register(userID, subRank, timeStamp) -> //(string*string*DateTime) //Shortened to fit only three variables
-            printfn "Printed At: Register"
             userActions <- userActions + 1
             following <- Map.add userID Set.empty following
             subscriber <- Map.add userID (subRank |> int) subscriber
             followTime <- followTime + (initTime.Subtract timeStamp).TotalMilliseconds
-            twitterInfo.[userID] <! sprintf "User %s Registered" userID
+            twitterInfo.[userID] <! sprintf $"User {userID} Registered"
 
         | UserMessages.Follow(clientID, userID, followID, timeStamp) -> //(string*string*string*DateTime)\
-            printfn "Printed At: UserMessages"
             userActions <- userActions + 1
             if following.ContainsKey followID && not (following.[followID].Contains userID) && following.[followID].Count < subscriber.[followID] then
                 let mutable s = following.[followID]
@@ -313,14 +292,12 @@ let UserServer(mailbox:Actor<_>) =
             followTime <- followTime + (initTime.Subtract timeStamp).TotalMilliseconds
 
         | Offline(clientID, userID, timeStamp) -> //(string*string*DateTime)
-            printfn "Printed At: Offline"
             userActions <- userActions + 1
             numUsers <- Set.remove userID numUsers
             followTime <- followTime + (initTime.Subtract timeStamp).TotalMilliseconds
             twitterInfo.[userID] <! sprintf "User %s Offline" userID
 
         | Online(clientID, userID, userAdmin, timeStamp) -> //(string*string*IActorRef*DateTime)
-            printfn "Printed At: Online"
             userActions <- userActions + 1
             numUsers <- Set.add userID numUsers
             feed <! ShowFeeds(clientID, userID, userAdmin)
@@ -328,11 +305,9 @@ let UserServer(mailbox:Actor<_>) =
             twitterInfo.[userID] <! sprintf "User %s Online" userID
 
         | UpdateUserInfo info -> //(Map<string,ActorSelection>)
-            printfn "Printed At: UpdateUserInfo"
             twitterInfo <- info
 
         | UpdateFeeds(userID, incomingTweet, tweetType, timeStamp) -> //(string*string*string*DateTime) //Shortened to fit only three variables
-            printfn "Printed At: UpdateFeeds"
             userActions <- userActions + 1
             for i in following.[userID] do
                 feed <! UpdateFeedTable(userID, tweetType, incomingTweet)
@@ -340,7 +315,6 @@ let UserServer(mailbox:Actor<_>) =
             followTime <- followTime + (initTime.Subtract timeStamp).TotalMilliseconds
 
         | UsersPrint(map, performance, timeStamp) -> //(Map<string,string>*uint64*DateTime)
-            printfn "Printed At: UsersPrint"
             userActions <- userActions + 1
             tweeter <! PrintTwitterStats(following, map, performance)
             followTime <- followTime + (initTime.Subtract timeStamp).TotalMilliseconds
@@ -353,6 +327,10 @@ let UserServer(mailbox:Actor<_>) =
     } 
     loop()
 
+
+//This actor is the main Twitter Server Engine which receives all the messages from the ClientSide
+//ServerEngine then essentially takes the messages and delegates these to all of the above defined
+//actors depending what is the task that needs to be completed.
 let serverEngine(mailbox:Actor<_>) = 
     let mutable tweeter = mailbox.Self
     let mutable retweeter = mailbox.Self
@@ -370,7 +348,6 @@ let serverEngine(mailbox:Actor<_>) =
         let (m,_,_,_,_) : Tuple<string,string,string,string,DateTime> = downcast msg 
         match m with
         | "Start" ->
-            printfn "Printed At: Start"
             printfn "Operations commence at server"
             initializedTimeStamp <- DateTime.Now
             tweeter <- spawn system (sprintf "Tweeter") Tweeter
@@ -387,7 +364,6 @@ let serverEngine(mailbox:Actor<_>) =
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(5000.0), mailbox.Self, ("PrintStats","","","",DateTime.Now))
         | "ClientRegister" ->
             let (_,clientID,clientIP,clientPort,_) : Tuple<string,string,string,string,DateTime> = downcast msg 
-            printfn "Printed At: ClientRegister"
             clientActions <- clientActions + 1
             let clientPort = system.ActorSelection(sprintf "akka.tcp://ClientSideTwitter@%s:%s/user/Printer" clientIP clientPort)
             clientInfo <- Map.add clientID clientPort clientInfo
@@ -400,7 +376,6 @@ let serverEngine(mailbox:Actor<_>) =
             mailbox.Sender() <! ("ClientMessageAck","","","","")
         | "UserRegister" ->
             let (_,clientID, userID, count, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
-            printfn "Printed At: UserRegister"
             clientActions <- clientActions + 1
             user <! Register(clientID, userID, timeStamp)
             mentions <! MentionsRegister(clientID, userID)
@@ -408,60 +383,51 @@ let serverEngine(mailbox:Actor<_>) =
 
         | "GoOnline" ->
             let (_,clientID, userID, _, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
-            printfn "Printed At: GoOnline"
             clientActions <- clientActions + 1
             user <! Online(clientID, userID, mailbox.Sender(), timeStamp)
 
         | "GoOffline" ->
             let (_,clientID, userID, _, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
-            printfn "Printed At: GoOffline"
             clientActions <- clientActions + 1
             user <! Offline(clientID, userID, timeStamp)
 
         | "Follow" ->
             let(_,clientID, userID, toBeFollowed, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
-            printfn "Printed At: Follow"
             clientActions <- clientActions + 1
             user <! Follow(clientID, userID, toBeFollowed, timeStamp)
 
         | "Tweet" ->
             let(_,clientID, userID, tweet, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
-            printfn "Printed At: Tweet"
             clientActions <- clientActions + 1
             mentions <! ReadMentions(clientID, userID, tweet, timeStamp)
 
         | "ReTweet" ->
             let (_,clientID, userID, _, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg
-            printfn "Printed At: ReTweet"
             clientActions <- clientActions + 1
             retweeter <! Retweet(clientID, userID, timeStamp)
 
         | "Mention" ->
             let(_,clientID, userID, mentionedUser, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
-            printfn "Printed At: Mention"
             clientActions <- clientActions + 1
             mentions <! QueryMentions(clientID, userID, mentionedUser, timeStamp)
 
         | "HashTag" ->
             let(_,clientID, userID, hashTag, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
-            printfn "Printed At: HashTag"
             clientActions <- clientActions + 1
             hashtag <! QueryHashtag(clientID, userID, hashTag, timeStamp)
 
         | "ServiceStats" ->
             let(_,_, key, value,_) : Tuple<string,string,string,string,DateTime> = downcast msg 
-            printfn "Printed At: ServiceStats"
             if key <> "" then
                 if stats.ContainsKey key then
                     stats <- Map.remove key stats
             stats <- Map.add key value stats
 
         | "PrintStats" ->
-            printfn "Printed At: PrintStats"
             let mutable performance = 0
             let timeSpan = (DateTime.Now-initializedTimeStamp).TotalSeconds |> int
             if clientActions > 0 then
-                printfn "Printed from inside printstats if statement"
+
                 performance <- clientActions/timeSpan
                 user <! UsersPrint(stats, performance, DateTime.Now)
                 printfn "Server uptime = %u sec, requests = %u, Avg requests = %u per second" timeSpan clientActions performance
@@ -472,8 +438,6 @@ let serverEngine(mailbox:Actor<_>) =
     } 
     loop()
 
-
-
-let boss = spawn system "serverEngine" serverEngine
-boss <! ("Start", "","","",DateTime.Now)
+let serverEngineActor = spawn system "serverEngine" serverEngine
+serverEngineActor <! ("Start", "","","",DateTime.Now)
 system.WhenTerminated.Wait()

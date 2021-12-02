@@ -6,7 +6,9 @@
 open System
 open Akka.Actor
 open Akka.FSharp
-//Commence
+
+//This file contains all of the messages that are being used at the Twitter Client as well as the Twitter Server
+
 //Client Side Messages Defined Here
 type Client_Messages =
     | Commence of int*int*int*string
@@ -21,14 +23,6 @@ type Client_Messages =
     | RequestStatOffline
     | Action
     | ClientTweet
-    
-//type ServerToUserAdmin =
-//    | Commence of string*string*string*string
-//    | ClientMessageAck
-//    | UserRegistration of string
-//    | UserRegistrationAck of string*string
-//    | SetStatusOffline
-//    | OnlineAcknowledgement of string
 
 //ServerSideMessages Defined Here
 type UserMessages = 
@@ -41,9 +35,6 @@ type UserMessages =
     | UpdateFeeds of string*string*string*DateTime //Shortened to fit only three variables
     | UsersPrint of Map<string,string>*int*DateTime
 
-//type TwitterMessages =
-//    | InitializeTweet of IActorRef*IActorRef
-//    | ServerTweet of string*string*string*DateTime*IActorRef
 type serverEngineMessages =
     | Start
     | ClientRegister of string*string*string
@@ -78,15 +69,15 @@ type HashTagMessages =
     
 type MentionsMessages = 
     | InitializeMentions of IActorRef
-    | MentionsRegister of (string*string)
-    | ReadMentions of (string*string*string*DateTime)
-    | UpdateMentionsInfo of (Map<string,ActorSelection>)
-    | QueryMentions of (string*string*string*DateTime)
+    | MentionsRegister of string*string
+    | ReadMentions of string*string*string*DateTime
+    | UpdateMentionsInfo of Map<string,ActorSelection>
+    | QueryMentions of string*string*string*DateTime
 
 type FeedMessages = 
-    | ShowFeeds of (string*string*IActorRef)
-    | UpdateFeedTable of (string*string*string)
-    | UpdateFeedInfo of (Map<string,ActorSelection>)
+    | ShowFeeds of string*string*IActorRef
+    | UpdateFeedTable of string*string*string
+    | UpdateFeedInfo of Map<string,ActorSelection>
 
 type ServerMessage = 
     | ReceivedMessage of string*string*string*string*DateTime

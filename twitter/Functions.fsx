@@ -1,6 +1,6 @@
 ﻿open System
 
-//Function to swap elements in a list
+//Functions being called from actors to randomize the process
 let swap (a:_[]) x y =
     let temp = a.[x]
     a.[x] <- a.[y]

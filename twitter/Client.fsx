@@ -12,13 +12,15 @@ open Akka.FSharp
 open Akka.Configuration
 open Messages
 
-
+//Command Line Arguments
 let curIP = (string) fsi.CommandLineArgs.[1] //This is the IP of the current client
 let curPort = (string) fsi.CommandLineArgs.[2] //This is the port that the client is available on 
 let curClientID = (string) fsi.CommandLineArgs.[3] //This is the ClientID aka, terminal ID
 let totalUsers = (string) fsi.CommandLineArgs.[4] //This is the total number of users that can be spread across "N" clients 
 let totalClients = (string) fsi.CommandLineArgs.[5] //These are the "N" Clients mentioned above 
 let mainServerIP = (string) fsi.CommandLineArgs.[6] //This is where we will be accessing out server //Can set to static if needed
+
+//We have the port data presently set as variable whereas the host is localhost which can be modified if program run on multiple machines
 let configuration =
     ConfigurationFactory.ParseString(
         sprintf @"akka {            
@@ -46,6 +48,9 @@ let Printer(mailbox: Actor<_>) =
 
 let printer = spawn system "Printer" Printer
 
+//This is the user actor which acts as the name suggests users and exists at the client side of the server
+//This is the type sent to the serverside for registration and all other tasks are returned to this actor type
+//which include all actions like tweeting, retweeting, etc and are done randomly but some actions are done at predefined time intervals
 let User (mailbox:Actor<_>) =
     let mutable curID = ""
     let mutable onlineStatus = false
@@ -62,7 +67,6 @@ let User (mailbox:Actor<_>) =
         let! msg = mailbox.Receive()
         match msg with
         | UserReady(userID', list_Clients', server', totalUsers', curClientID', popularHashTags', time) ->
-            printfn "Printed at: UserReady"
             curID <- userID'
             list_Clients <- list_Clients'
             server <- server'
@@ -73,7 +77,6 @@ let User (mailbox:Actor<_>) =
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(50.), mailbox.Self, Action)
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.), mailbox.Self, ClientTweet)
         | Action ->
-            printfn "Printed at: Action"
             if onlineStatus then
                 let actions = ["follow";"queryM";"queryHT"]
                 match actions.[random.Next(actions.Length)] with
@@ -96,7 +99,6 @@ let User (mailbox:Actor<_>) =
                     ()
                 | _ -> ()
         | ClientTweet ->
-            printfn "Printed at: ClientTweet"
             if onlineStatus then
                 let tweets = ["tweet";"retweet";"hashtweet";"hashmention"]
                 let curTime = DateTime.Now
@@ -124,10 +126,8 @@ let User (mailbox:Actor<_>) =
                 | _ -> ()
                 system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(interval), mailbox.Self, ClientTweet)
         | RequestStatOffline ->
-            printfn "Printed at: RequestStatOffline"
             onlineStatus <- false
         | RequestStatOnline ->
-            printfn "Printed at: RequestStatOnline"
             onlineStatus <- true
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(100.0), mailbox.Self, Action)
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(101.0), mailbox.Self, ClientTweet)
@@ -136,6 +136,9 @@ let User (mailbox:Actor<_>) =
     }
     loop()
     
+    
+//This is the client side administrator which sends all of the newly created Users to the server for registration and
+//further recieves confirmations from the server about the registration and also sets status online and offline for users 
 let UserAdmin (mailbox:Actor<_>) =
     let mutable ClientID = ""
     let mutable totalUsers = 0
@@ -149,11 +152,10 @@ let UserAdmin (mailbox:Actor<_>) =
     let mutable list_Users = []
     let mutable subsrank = Map.empty
     let server = system.ActorSelection(sprintf "akka.tcp://ServerSideTwitter@%s:8776/user/Server" mainServerIP)
-    let popularHashTags = ["lockdown";"metoo";"covid19";"blacklivesmatter";"crypto";"crowdfunding";"giveaway";"contest";
-                        "blackhistorymonth";"womenshistorymonth";"cryptocurrency";"womensday";"happybirthday";
-                        "authentication";"USelections";"bidenharris";"internationalwomensday";"influencermarketing";
-                        "distributedsystems";"gogators";"blackfriday";"funny";"womeninstem";"iwon";"photography";
-                        "mondaymotivation";"ootd";"vegan";"traveltuesday";"tbt"] //Implement reccent hashtags here
+    let popularHashTags = ["UFHomecoming";"VolleyBallMatches";"Tasty";"RecSportsTournaments";"Bitcoin";"Etherium";"Doge";"Tesla";
+                        "Lamborghini";"Mercedes";"F1Racing";"RedbulRacing";"AMGMororsport";
+                        "Coffee";"ComfortFood";"Gaming";"Streams";"TrackMania";"RocketLeague";"BlackFriday";"CyberMonday";"funny"
+                        ;"Chocolate";"Life";"Cities";"CodeForGood";"VeganRecipes";"Clouds";"Cars";"Movies"] //Implement reccent hashtags here
 //    =======================================================================
     let rec loop() = actor {
         let! (msg:obj) = mailbox.Receive()
@@ -161,7 +163,6 @@ let UserAdmin (mailbox:Actor<_>) =
         match messageType with
         | "Commence" ->
             let (_,id',totalUsers',totalClients',curPort') : Tuple<string,string,string,string,string> = downcast msg
-            printfn "Printed at: Commence"
             printfn $"Operations Commence at Client: {id'}"
             ClientID <- id'
             totalUsers <- (int32) totalUsers'
@@ -178,12 +179,10 @@ let UserAdmin (mailbox:Actor<_>) =
             for i in [1..totalUsers] do
                 list_Clients <- (string) i :: list_Clients
         | "ClientMessageAck" ->
-            printfn "Printed at: ClientMessageAck"
             mailbox.Self <! ("UserRegistration","1","","","")
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(8.0), mailbox.Self, ("SetStatusOffline","","","",""))
         | "UserRegistration" ->
             let (_,a,_,_,_) : Tuple<string,string,string,string,string> = downcast msg 
-            printfn "Printed at: UserRegistration"
             let curID' = (int) a
             let mutable curID = sprintf "%s_%s" ClientID ((string) list_Users.[curID' - 1])
             let curLocation = spawn system (sprintf "User_%s" curID) User
@@ -194,7 +193,6 @@ let UserAdmin (mailbox:Actor<_>) =
                 system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.0), mailbox.Self, ("UserRegistration",string (curID' + 1),"","",""))
         | "UserRegistrationAck" ->
             let (_,incomingID,incomingMsg,_,_) : Tuple<string,string,string,string,string> = downcast msg 
-            printfn "Printed at: UserRegistrationAck"
             
             printfn $"{incomingMsg}"
             let temp =
@@ -204,7 +202,6 @@ let UserAdmin (mailbox:Actor<_>) =
                     totalUsers/100
             userLocation.[incomingID] <! UserReady(incomingID, list_Clients, server, totalUsers, ClientID, popularHashTags, temp*intervals.[incomingID])
         | "SetStatusOffline" ->
-            printfn "Printed at: SetStatusOffline"
             let mutable total = registeredUsers.Length
             let mutable set = Set.empty
             for i in [1..total] do
@@ -221,7 +218,6 @@ let UserAdmin (mailbox:Actor<_>) =
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(8.0), mailbox.Self, ("SetStatusOffline","","","",""))
         | "OnlineAcknowledgement" ->
             let (_,incomingID,_,_,_) : Tuple<string,string,string,string,string> = downcast msg 
-            printfn "Printed at: OnlineAcknowledgement"
             userLocation.[incomingID] <! RequestStatOnline
         | _ -> ()
         return! loop()
