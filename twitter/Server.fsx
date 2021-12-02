@@ -366,9 +366,10 @@ let serverEngine(mailbox:Actor<_>) =
     let mutable initializedTimeStamp = DateTime.Now
     
     let rec loop() = actor {
-        let! msg = mailbox.Receive()
-        match msg with
-        | Start ->
+        let! (msg:obj) = mailbox.Receive()
+        let (m,_,_,_,_) : Tuple<string,string,string,string,DateTime> = downcast msg 
+        match m with
+        | "Start" ->
             printfn "Printed At: Start"
             printfn "Operations commence at server"
             initializedTimeStamp <- DateTime.Now
@@ -383,8 +384,9 @@ let serverEngine(mailbox:Actor<_>) =
             retweeter <! InitializeRetweet(user, tweeter)
             user <! Init(retweeter, feed, tweeter)
             mentions <! InitializeMentions(tweeter)
-            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(5000.0), mailbox.Self, PrintStats)
-        | ClientRegister(clientID, clientIP, clientPort) ->
+            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(5000.0), mailbox.Self, ("PrintStats","","","",DateTime.Now))
+        | "ClientRegister" ->
+            let (_,clientID,clientIP,clientPort,_) : Tuple<string,string,string,string,DateTime> = downcast msg 
             printfn "Printed At: ClientRegister"
             clientActions <- clientActions + 1
             let clientPort = system.ActorSelection(sprintf "akka.tcp://ClientSideTwitter@%s:%s/user/Printer" clientIP clientPort)
@@ -395,57 +397,66 @@ let serverEngine(mailbox:Actor<_>) =
             mentions <! UpdateMentionsInfo(clientInfo)
             feed <! UpdateFeedInfo(clientInfo)
             user <! UpdateUserInfo(clientInfo)
-            mailbox.Sender() <! ClientMessageAck
-        | UserRegister(clientID, userID, count, timeStamp) ->
+            mailbox.Sender() <! ("ClientMessageAck","","","","")
+        | "UserRegister" ->
+            let (_,clientID, userID, count, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
             printfn "Printed At: UserRegister"
             clientActions <- clientActions + 1
             user <! Register(clientID, userID, timeStamp)
             mentions <! MentionsRegister(clientID, userID)
-            mailbox.Sender() <! UserRegistrationAck(userID, "ACK")
+            mailbox.Sender() <! ("UserRegistrationAck",userID, "ACK","","")
 
-        | GoOnline(clientID, userID, timeStamp) ->
+        | "GoOnline" ->
+            let (_,clientID, userID, _, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
             printfn "Printed At: GoOnline"
             clientActions <- clientActions + 1
             user <! Online(clientID, userID, mailbox.Sender(), timeStamp)
 
-        | GoOffline(clientID, userID, timeStamp) ->
+        | "GoOffline" ->
+            let (_,clientID, userID, _, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
             printfn "Printed At: GoOffline"
             clientActions <- clientActions + 1
             user <! Offline(clientID, userID, timeStamp)
 
-        | Follow(clientID, userID, toBeFollowed, timeStamp) ->
+        | "Follow" ->
+            let(_,clientID, userID, toBeFollowed, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
             printfn "Printed At: Follow"
             clientActions <- clientActions + 1
             user <! Follow(clientID, userID, toBeFollowed, timeStamp)
 
-        | Tweet(clientID, userID, tweet, timeStamp) ->
+        | "Tweet" ->
+            let(_,clientID, userID, tweet, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
             printfn "Printed At: Tweet"
             clientActions <- clientActions + 1
             mentions <! ReadMentions(clientID, userID, tweet, timeStamp)
 
-        | ReTweet(clientID, userId, timeStamp) ->
+        | "ReTweet" ->
+            let (_,clientID, userID, _, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg
             printfn "Printed At: ReTweet"
             clientActions <- clientActions + 1
-            retweeter <! Retweet(clientID, userId, timeStamp)
+            retweeter <! Retweet(clientID, userID, timeStamp)
 
-        | Mention(clientID, userID, mentionedUser, timeStamp) ->
+        | "Mention" ->
+            let(_,clientID, userID, mentionedUser, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
             printfn "Printed At: Mention"
             clientActions <- clientActions + 1
             mentions <! QueryMentions(clientID, userID, mentionedUser, timeStamp)
 
-        | HashTag(clientID, userID, hashTag, timeStamp) ->
+        | "HashTag" ->
+            let(_,clientID, userID, hashTag, timeStamp) : Tuple<string,string,string,string,DateTime> = downcast msg 
             printfn "Printed At: HashTag"
             clientActions <- clientActions + 1
             hashtag <! QueryHashtag(clientID, userID, hashTag, timeStamp)
 
-        | ServiceStats(key, value) ->
+        | "ServiceStats" ->
+            let(_,_, key, value,_) : Tuple<string,string,string,string,DateTime> = downcast msg 
             printfn "Printed At: ServiceStats"
             if key <> "" then
                 if stats.ContainsKey key then
                     stats <- Map.remove key stats
             stats <- Map.add key value stats
 
-        | PrintStats ->
+        | "PrintStats" ->
             printfn "Printed At: PrintStats"
             let mutable performance = 0
             let timeSpan = (DateTime.Now-initializedTimeStamp).TotalSeconds |> int
@@ -454,7 +465,7 @@ let serverEngine(mailbox:Actor<_>) =
                 performance <- clientActions/timeSpan
                 user <! UsersPrint(stats, performance, DateTime.Now)
                 printfn "Server uptime = %u sec, requests = %u, Avg requests = %u per second" timeSpan clientActions performance
-            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(5000.0), mailbox.Self, PrintStats)
+            system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(5000.0), mailbox.Self, ("PrintStats","","","",DateTime.Now))
 
         | _ -> ()
         return! loop()         
