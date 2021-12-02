@@ -1,6 +1,3 @@
-open Akka.Configuration
-open Messages
-
 #time "on"
 #r "nuget: Akka.FSharp"
 #r "nuget: Akka.FSharp"
@@ -12,6 +9,9 @@ open Messages
 open System
 open Akka.Actor
 open Akka.FSharp
+open Akka.Configuration
+open Messages
+
 
 let curIP = (string) fsi.CommandLineArgs.[1] //This is the IP of the current client
 let curPort = (string) fsi.CommandLineArgs.[2] //This is the port that the client is available on 
