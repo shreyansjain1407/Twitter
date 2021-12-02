@@ -100,13 +100,13 @@ let User (mailbox:Actor<_>) =
                 match tweets.[random.Next(tweets.Length)] with
                 | "tweet" ->
                     curTweets <- curTweets + 1
-                    server <! Tweet(ClientID, curID, sprintf $"Tweet from {curID} : {curTweets}", curTime)
+                    server <! Tweet(ClientID, curID, sprintf $"{curID} Tweeted ->tweet_{curTweets}", curTime)
                 | "retweet" ->
                     server <! ReTweet(ClientID, curID, curTime)
                 | "hashtweet" ->
                     curTweets <- curTweets + 1
                     let ht = popularHashTags.[random.Next(popularHashTags.Length)]
-                    server <! Tweet(ClientID, curID, sprintf "Tweet from %s: %d with #%s" curID curTweets ht, curTime)
+                    server <! Tweet(ClientID, curID, sprintf $"{curID} Tweeted -> tweet_{curTweets} with hashtag #{ht}", curTime)
                 | "hashmention" ->
                     let mutable mentUser = (string)[1..totalUsers].[random.Next(totalUsers)]
                     let mutable client = list_Clients.[random.Next(list_Clients.Length)]
@@ -116,7 +116,7 @@ let User (mailbox:Actor<_>) =
                         toBeMentioned <- sprintf "%s_%s" client mentUser
                     let ht = popularHashTags.[random.Next(popularHashTags.Length)]
                     curTweets <- curTweets + 1
-                    let tweet = sprintf "Tweet from %s: %d with #%s and @%s" curID curTweets ht toBeMentioned
+                    let tweet = sprintf $"{curID} tweeted tweet_{curTweets} with hashtag #{ht} and mentioned @{toBeMentioned}"
                     server <! Tweet(ClientID, curID, tweet, curTime)
                 | _ -> ()
                 system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(interval), mailbox.Self, Tweet)
@@ -182,6 +182,7 @@ let UserAdmin (mailbox:Actor<_>) =
             if curID' < totalUsers then
                 system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(40.0), mailbox.Self, UserRegistration(string (curID' + 1)))
         | UserRegistrationAck(incomingID,incomingMsg) ->
+            
             printfn $"{incomingMsg}"
             let temp =
                 if totalUsers/100 < 5 then

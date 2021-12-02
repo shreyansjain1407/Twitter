@@ -341,6 +341,7 @@ let serverEngine(mailbox:Actor<_>) =
         let! msg = mailbox.Receive()
         match msg with
         | Start ->
+            printfn "Operations commence at server"
             initializedTimeStamp <- DateTime.Now
             tweeter <- spawn system (sprintf "Tweeter") Tweeter
             retweeter <- spawn system (sprintf "Retweeter") Retweeter
@@ -355,7 +356,8 @@ let serverEngine(mailbox:Actor<_>) =
             mentions <! InitializeMentions(tweeter)
             system.Scheduler.ScheduleTellOnce(TimeSpan.FromMilliseconds(5000.0), mailbox.Self, PrintStats)
             ()
-        | ClientRegister(clientID, clientIP, clientPort) -> 
+        | ClientRegister(clientID, clientIP, clientPort) ->
+            printf "Here we are at ClientRegister"
             clientActions <- clientActions + 1
             let clientPort = system.ActorSelection(sprintf "akka.tcp://ClientSideTwitter@%s:%s/user/Printer" clientIP clientPort)
             clientInfo <- Map.add clientID clientPort clientInfo
