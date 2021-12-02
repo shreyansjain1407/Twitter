@@ -42,6 +42,14 @@ simulated users that we tested with was 40000 users. As the number of users incr
 did the average time for each server action requested take to complete. Obviously the 
 amount of tweets/retweets/hashtags/mentions all went up as well. 
 
+| Num Users | Tweets | Retweets | HashTag Query | Mention Query |
+| ----------|--------|----------|---------------|---------------|
+|    1000   | 15.876 | 14.232   | 13.523        | 13.043        |
+| 2000      | 214.581|126.754   | 125.862       | 126.904       |
+| 3000      |501.667 |446.197   | 578.365       | 575.290       |
+| 4000      |643.472 | 555.845  | 602.045       | 603.586       |
+| 5000      | 703.363| 616.489  | 727.902       | 724.738       |
+
 We simulated varying periods of connections and disconnections from the users. We found
 that in periods of greater connection the strain on the server was much more noticeable. 
 The time taken for each action generally increased. The average amount of server requests
