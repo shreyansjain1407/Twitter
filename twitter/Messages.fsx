@@ -30,6 +30,34 @@ type ServerToUserAdmin =
     | SetStatusOffline
     | OnlineAcknowledgement of string
 
+//ServerSideMessages Defined Here
+type UserMessages = 
+    | Init of IActorRef*IActorRef*IActorRef
+    | Register of string*string*DateTime //Shortened to fit only three variables
+    | Follow of string*string*string*DateTime
+    | Offline of string*string*DateTime
+    | Online of string*string*IActorRef*DateTime
+    | UpdateUserInfo of Map<string,ActorSelection>
+    | UpdateFeeds of string*string*string*DateTime //Shortened to fit only three variables
+    | UsersPrint of Map<string,string>*int*DateTime
+
+//type TwitterMessages =
+//    | InitializeTweet of IActorRef*IActorRef
+//    | ServerTweet of string*string*string*DateTime*IActorRef
+type serverEngineMessages =
+    | Start
+    | ClientRegister of string*string*string
+    | UserRegister of string*string*string*DateTime
+    | GoOnline of string*string*DateTime
+    | GoOffline of string*string*DateTime
+    | Follow of string*string*string*DateTime
+    | Tweet of string*string*string*DateTime
+    | ReTweet of string*string*DateTime
+    | Mention of string*string*string*DateTime
+    | HashTag of string*string*string*DateTime
+    | ServiceStats of string*string
+    | PrintStats
+
 type TweetMessages = 
     | InitializeTweet of IActorRef*IActorRef
     | SendTweet of string*string*string*DateTime*IActorRef
