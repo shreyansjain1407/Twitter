@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Include="Program.fs" />
     <None Include="Functions.fsx" />
+    <None Include="ExpServer.fsx" />
+    <None Include="ExpClient.fsx" />
   </ItemGroup>
 
   <ItemGroup>
