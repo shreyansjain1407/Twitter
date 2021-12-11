@@ -31,10 +31,10 @@ let configuration =
 let serversystem = System.create "Server" configuration
 
 let rec server = function
-| Message(num) ->
+| Send(num) ->
     printfn "Got a number %d" num
     become server
 
-let serveRef = spawn serversystem "server" <| props(actorOf server)
+let (serveRef : IActorRef<Message>) = spawn serversystem "server" <| props(actorOf server)
 //let serverRef = serversystem.ActorOf(Props.Create(typeof<server>), "server")
 Console.ReadLine() |> ignore

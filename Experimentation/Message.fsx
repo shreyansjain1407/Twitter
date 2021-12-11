@@ -2,4 +2,4 @@
 #r "nuget: Akka.Remote"
 #r "nuget: Newtonsoft.Json"
 
-type Message = Message of int
+type Message = Send of int
