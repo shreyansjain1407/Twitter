@@ -36,5 +36,4 @@ let rec server = function
     become server
 
 let serveRef = spawn serversystem "server" <| props(actorOf server)
-//let serverRef = serversystem.ActorOf(Props.Create(typeof<server>), "server")
 Console.ReadLine() |> ignore

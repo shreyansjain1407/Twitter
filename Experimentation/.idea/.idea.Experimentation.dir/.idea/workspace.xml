@@ -5,21 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="89963fd2-7dd6-4d4f-8f4e-60a5a70d9117" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/ExpClient.fsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ExpServer.fsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Message.fsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Backup1/obj/Debug/netcoreapp3.1/Twitter.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../Backup1/obj/Debug/netcoreapp3.1/Twitter.assets.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Backup1/obj/Debug/netcoreapp3.1/Twitter.fsproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../Backup1/obj/Debug/netcoreapp3.1/Twitter.fsproj.AssemblyReference.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Backup1/obj/Debug/netcoreapp3.1/Twitter.fsproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../Backup1/obj/Debug/netcoreapp3.1/Twitter.fsproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Backup1/obj/Twitter.fsproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Backup1/obj/Twitter.fsproj.nuget.dgspec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Backup1/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Backup1/obj/project.assets.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Backup1/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../Backup1/obj/project.nuget.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Backup1/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Backup1/obj/project.packagespec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Backup1/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/../Backup1/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Experimentation.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Experimentation.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpServer.fsx" beforeDir="false" afterPath="$PROJECT_DIR$/ExpServer.fsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../twitter/.idea/.idea.twitter.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../twitter/.idea/.idea.twitter.dir/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../twitter/Twitter.fsproj" beforeDir="false" afterPath="$PROJECT_DIR$/../twitter/Twitter.fsproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../twitter/obj/Debug/netcoreapp3.1/Twitter.fsproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../twitter/obj/Debug/netcoreapp3.1/Twitter.fsproj.AssemblyReference.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../twitter/obj/Debug/netcoreapp3.1/Twitter.fsproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../twitter/obj/Debug/netcoreapp3.1/Twitter.fsproj.CoreCompileInputs.cache" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +57,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1639164552832</updated>
-      <workItem from="1639164558072" duration="3248000" />
+      <workItem from="1639164558072" duration="4382000" />
     </task>
     <servers />
   </component>
