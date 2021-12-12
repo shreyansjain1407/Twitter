@@ -1,0 +1,3 @@
+D:\Twitter\Twitter_Final_Submission\obj\Debug\net6.0\Twitter_Final_Submission.fsproj.AssemblyReference.cache
+D:\Twitter\Twitter_Final_Submission\obj\Debug\net6.0\Twitter_Final_Submission.AssemblyInfoInputs.cache
+D:\Twitter\Twitter_Final_Submission\obj\Debug\net6.0\Twitter_Final_Submission.AssemblyInfo.fs

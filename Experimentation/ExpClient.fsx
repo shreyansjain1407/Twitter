@@ -26,4 +26,5 @@ let clientSystem = System.create "client" configuration
 
 let serveRef = select clientSystem "akka.tcp://Server@localhost:9002/user/server"
 serveRef <! Send(10)
+serveRef <! SendStr("This is a string that was sent");
 Console.ReadLine()

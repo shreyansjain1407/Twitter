@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e089b8fa-05fd-42dc-85bf-9bac15c71cf3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Experimentation/.idea/.idea.Experimentation.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Experimentation/.idea/.idea.Experimentation.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Experimentation/ExpClient.fsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Experimentation/ExpClient.fsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Experimentation/ExpServer.fsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Experimentation/ExpServer.fsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.twitter.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.twitter.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Experimentation/Message.fsx" beforeDir="false" afterPath="$PROJECT_DIR$/../Experimentation/Message.fsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/Debug/netcoreapp3.1/Twitter.fsproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/netcoreapp3.1/Twitter.fsproj.CoreCompileInputs.cache" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,6 +82,7 @@
       <workItem from="1638401722509" duration="1821000" />
       <workItem from="1638404220871" duration="14083000" />
       <workItem from="1639162803983" duration="6577000" />
+      <workItem from="1639272030950" duration="12000" />
     </task>
     <servers />
   </component>
@@ -100,6 +102,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />

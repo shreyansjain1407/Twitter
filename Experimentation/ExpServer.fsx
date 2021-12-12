@@ -31,10 +31,24 @@ let configuration =
 let serversystem = System.create "Server" configuration
 
 let rec server = function
-| Send(num) ->
-    printfn "Got a number %d" num
-    become server
+    | Send(num) ->
+        let newNumber = num * 10
+        printfn "Got a number %d" newNumber
+        become server
+    | SendStr(str) ->
+        printfn $"Received a string {str}"
+        become server
 
+let rec serverEngine = function
+    | Send(num) ->
+        printfn ""
+        become serverEngine
+    | SendStr(str) ->
+        printfn ""
+        become serverEngine
+
+
+let (serverEngine': IActorRef<Message>) = spawn serversystem "server" <| props(actorOf serverEngine)
 let (serveRef : IActorRef<Message>) = spawn serversystem "server" <| props(actorOf server)
 //let serverRef = serversystem.ActorOf(Props.Create(typeof<server>), "server")
 Console.ReadLine() |> ignore
