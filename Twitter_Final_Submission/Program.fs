@@ -1,4 +1,5 @@
-﻿open System
+﻿open Messages
+open System
 open System.Collections.Generic
 open Akka.Actor
 open Akka.Configuration
@@ -15,6 +16,7 @@ open Suave.Sockets
 open Suave.Sockets.Control
 open Suave.WebSocket
 
+
 let system = ActorSystem.Create("TwitterEngine")
 
 let setCORSHeaders =
@@ -28,114 +30,6 @@ let mutable followers = Map.empty
 let mutable mentions = Map.empty
 let mutable hashTags = Map.empty
 let mutable websockmap = Map.empty
-
-
-type NewAnswer =
-    {
-        Text: string
-    }
-type Answer = 
-    {
-        Text: string
-        AnswerId: int
-    }
-
-
-type RespMsg =
-    {
-        Comment: string
-        Content: list<string>
-        status: int
-        error: bool
-    }
-      
-
-type Register =
-    {
-        UserName: string
-        Password: string
-    }
-
-type Login =
-    {
-        UserName: string
-        Password: string
-    }
-
-type Logout =
-    {
-        UserName: string
-    }
-
-type Follower = 
-    {
-        UserName: string
-        Following: string
-    }
-
-type NewTweet =
-    {
-        Tweet: string
-        UserName: string
-    }
-let buildByteResponseToWS (message:string) =
-    message
-    |> System.Text.Encoding.ASCII.GetBytes
-    |> ByteSegment
-
-
-let addUser (user: Register) =
-    let temp = users.TryFind(user.UserName)
-    if temp = None then
-        users <- users.Add(user.UserName,user.Password)
-        {Comment = "Sucessfully registered! Please login!!";Content=[];status=1;error=false}
-    else
-        {Comment = "Please Try Again!! The entered user exists!";Content=[];status=1;error=true}
-
-let loginuser (user: Login) = 
-    printfn "Received Request to login from %s as %A" user.UserName user
-    let temp = users.TryFind(user.UserName)
-    if temp = None then
-        {Comment = "Please Register! The user mentioned is not registered!";Content=[];status=0;error=true}
-    else
-        if temp.Value.CompareTo(user.Password) = 0 then
-            let temp1 = activeUsers.TryFind(user.UserName)
-            if temp1 = None then
-                activeUsers <- activeUsers.Add(user.UserName,true)
-                {Comment = "You have entered the Twitter Application!!";Content=[];status=2;error=false}
-            else
-                {Comment = "User logged in";Content=[];status=2;error=true}
-        else
-            {Comment = "Password is incorrect!";Content=[];status=1;error=true}
-
-let logoutuser (user:Logout) = 
-    printfn "Request for logout received from %s as %A" user.UserName user
-    let temp = users.TryFind(user.UserName)
-    if temp = None then
-        {Comment = "Please Register! The user mentioned is not registered!";Content=[];status=0;error=true}
-    else
-        let temp1 = activeUsers.TryFind(user.UserName)
-        if temp1 = None then
-            {Comment = "USer has not logged in!";Content=[];status=1;error=true}
-        else
-            activeUsers <- activeUsers.Remove(user.UserName)
-            {Comment = "Logout Sucessful!!";Content=[];status=1;error=false}
-
-let isUserLoggedIn username = 
-    let temp = activeUsers.TryFind(username)
-    if temp <> None then
-        1 
-    else
-        let temp1 = users.TryFind(username)
-        if temp1 = None then
-            -1 
-        else
-            0
-
-let checkUserExsistance username =
-    let temp = users.TryFind(username)
-    temp <> None
-
 
 
 type LiveUserHandlerMsg =
@@ -270,11 +164,6 @@ let addTweetToFollowers (tweet: NewTweet) =
             printfn "%s" i
             if temp2 <> None then
                 liveUserHandlerRef <! SendTweet(temp2.Value,tweet)
-
-type tweetHandlerMsg =
-    | AddTweetMsg of NewTweet
-    | AddTweetToFollowersMsg of NewTweet
-    | TweetParserMsg of NewTweet
 
 
 let tweetHandler (mailbox:Actor<_>) =
