@@ -74,7 +74,7 @@ let liveUserHandler (mailbox:Actor<_>) =
     }
     loop()
     
-let liveUserHandlerRef = spawn system "luref" liveUserHandler
+let liveUserHandlerRef = spawn system "LiveUser" liveUserHandler
 
 let tweetParser (tweet:NewTweet) =
     let splits = (tweet.Tweet.Split ' ')
@@ -130,7 +130,7 @@ let addFollower (follower: Follower) =
             else
                 if temp.Value.Exists( fun x -> x.CompareTo(follower.UserName) = 0 ) then
                     if temp1 <> None then
-                        liveUserHandlerRef <! Following(temp1.Value,"You already been subscribed to: "+follower.Following)
+                        liveUserHandlerRef <! Following(temp1.Value,"Already subscribed to: "+follower.Following)
                     {Comment = "You already been subscribed to: "+follower.Following;Content=[];status=2;error=true}
                 else
                     temp.Value.Add(follower.UserName)
@@ -140,9 +140,9 @@ let addFollower (follower: Follower) =
         else
             {Comment = "Subscriber "+follower.Following+" doesn't exist";Content=[];status=2;error=true}
     elif status = 0 then
-        {Comment = "Login to the application!!";Content=[];status=1;error=true}
+        {Comment = "Login";Content=[];status=1;error=true}
     else
-        {Comment = "Please Register!! Couldn't find User!";Content=[];status=0;error=true}
+        {Comment = "Couldn't find User";Content=[];status=0;error=true}
 
 let addTweet (tweet: NewTweet) =
     let temp = tweetOwner.TryFind(tweet.UserName)
@@ -180,7 +180,7 @@ let tweetHandler (mailbox:Actor<_>) =
     }
     loop()
 
-let tweetHandlerRef = spawn system "thref" tweetHandler
+let tweetHandlerRef = spawn system "TweetHandler" tweetHandler
 
 let addTweetToUser (tweet: NewTweet) =
     let status = isUserLoggedIn tweet.UserName
@@ -190,33 +190,33 @@ let addTweetToUser (tweet: NewTweet) =
         tweetHandlerRef <! AddTweetToFollowersMsg(tweet)
         // addTweetToFollowers tweet
         tweetHandlerRef <! TweetParserMsg(tweet)
-        {Comment = "Sent tweet sucessfully!!";Content=[];status=2;error=false}
+        {Comment = "Sent tweet";Content=[];status=2;error=false}
     elif status = 0 then
         {Comment = "Please Login";Content=[];status=1;error=true}
     else
-        {Comment = "Please Register!! Couldn't find User!";Content=[];status=0;error=true}
+        {Comment = "Couldn't find User!";Content=[];status=0;error=true}
 
 let getTweets username =
     let status = isUserLoggedIn username
     if status = 1 then
         let temp = tweetOwner.TryFind(username)
         if temp = None then
-            {Comment = "Tweet history empty! Please go Head and tweet!!";Content=[];status=2;error=false}
+            {Comment = "No Tweet History";Content=[];status=2;error=false}
         else
             let len = Math.Min(10,temp.Value.Count)
             let res = [for i in 1 .. len do yield(temp.Value.[i-1])] 
             {Comment = "User tweets task sucessfully executed!!";Content=res;status=2;error=false}
     elif status = 0 then
-        {Comment = "Login to the application!!";Content=[];status=1;error=true}
+        {Comment = "Please login";Content=[];status=1;error=true}
     else
-        {Comment = "Please Register!! Couldn't find User!";Content=[];status=0;error=true}
+        {Comment = "Couldn't find User";Content=[];status=0;error=true}
 
 let getMentions username = 
     let status = isUserLoggedIn username
     if status = 1 then
         let temp = mentions.TryFind(username)
         if temp = None then
-            {Comment = "No Mentions yet!!";Content=[];status=2;error=false}
+            {Comment = "No Mentions yet";Content=[];status=2;error=false}
         else
             let res = new List<string>()
             for i in temp.Value do
@@ -228,7 +228,7 @@ let getMentions username =
     elif status = 0 then
         {Comment = "Please Login";Content=[];status=1;error=true}
     else
-        {Comment = "User Doesn't Exsist!!Please Register";Content=[];status=0;error=true}
+        {Comment = "User Doesn't Exsist";Content=[];status=0;error=true}
 
 let getHashTags username hashtag =
     let status = isUserLoggedIn username
@@ -244,7 +244,7 @@ let getHashTags username hashtag =
     elif status = 0 then
         {Comment = "Please Login";Content=[];status=1;error=true}
     else
-        {Comment = "Please Register!! Couldn't find User!";Content=[];status=0;error=true}
+        {Comment = "Couldn't find User";Content=[];status=0;error=true}
 
 let registerNewUser (user: Register) =
     printfn "Request to register from %s as %A" user.UserName user

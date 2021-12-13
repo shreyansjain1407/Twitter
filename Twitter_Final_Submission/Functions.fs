@@ -16,38 +16,38 @@ let addUser (user: Register) =
     let temp = users.TryFind(user.UserName)
     if temp = None then
         users <- users.Add(user.UserName,user.Password)
-        {Comment = "Sucessfully registered! Please login!!";Content=[];status=1;error=false}
+        {Comment = "Sucessfully registered ";Content=[];status=1;error=false}
     else
-        {Comment = "Please Try Again!! The entered user exists!";Content=[];status=1;error=true}
+        {Comment = "The entered user exists!";Content=[];status=1;error=true}
 
 let loginuser (user: Login) = 
-    printfn "Received Request to login from %s as %A" user.UserName user
+    printfn "Received Request to login from %s" user.UserName 
     let temp = users.TryFind(user.UserName)
     if temp = None then
-        {Comment = "Please Register! The user mentioned is not registered!";Content=[];status=0;error=true}
+        {Comment = "User is not registered!";Content=[];status=0;error=true}
     else
         if temp.Value.CompareTo(user.Password) = 0 then
             let temp1 = activeUsers.TryFind(user.UserName)
             if temp1 = None then
                 activeUsers <- activeUsers.Add(user.UserName,true)
-                {Comment = "You have entered the Twitter Application!!";Content=[];status=2;error=false}
+                {Comment = "You have entered the Twitter Application";Content=[];status=2;error=false}
             else
                 {Comment = "User logged in";Content=[];status=2;error=true}
         else
             {Comment = "Password is incorrect!";Content=[];status=1;error=true}
 
 let logoutuser (user:Logout) = 
-    printfn "Request for logout received from %s as %A" user.UserName user
+    printfn "Request for logout received from %s" user.UserName
     let temp = users.TryFind(user.UserName)
     if temp = None then
-        {Comment = "Please Register! The user mentioned is not registered!";Content=[];status=0;error=true}
+        {Comment = "The user mentioned is not registered";Content=[];status=0;error=true}
     else
         let temp1 = activeUsers.TryFind(user.UserName)
         if temp1 = None then
-            {Comment = "USer has not logged in!";Content=[];status=1;error=true}
+            {Comment = "User has not logged in!";Content=[];status=1;error=true}
         else
             activeUsers <- activeUsers.Remove(user.UserName)
-            {Comment = "Logout Sucessful!!";Content=[];status=1;error=false}
+            {Comment = "Logout successful";Content=[];status=1;error=false}
 
 let isUserLoggedIn username = 
     let temp = activeUsers.TryFind(username)
