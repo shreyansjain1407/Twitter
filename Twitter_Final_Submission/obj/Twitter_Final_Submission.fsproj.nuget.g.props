@@ -15,8 +15,8 @@
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <PkgFSharp_Core Condition=" '$(PkgFSharp_Core)' == '' ">C:\Users\shrey\.nuget\packages\fsharp.core\6.0.1</PkgFSharp_Core>
     <PkgSuave Condition=" '$(PkgSuave)' == '' ">C:\Users\shrey\.nuget\packages\suave\2.6.1</PkgSuave>
-    <PkgAkka Condition=" '$(PkgAkka)' == '' ">C:\Users\shrey\.nuget\packages\akka\1.4.28</PkgAkka>
-    <PkgAkka_Remote Condition=" '$(PkgAkka_Remote)' == '' ">C:\Users\shrey\.nuget\packages\akka.remote\1.4.28</PkgAkka_Remote>
-    <PkgAkka_FSharp Condition=" '$(PkgAkka_FSharp)' == '' ">C:\Users\shrey\.nuget\packages\akka.fsharp\1.4.28</PkgAkka_FSharp>
+    <PkgAkka Condition=" '$(PkgAkka)' == '' ">C:\Users\shrey\.nuget\packages\akka\1.4.29</PkgAkka>
+    <PkgAkka_Remote Condition=" '$(PkgAkka_Remote)' == '' ">C:\Users\shrey\.nuget\packages\akka.remote\1.4.29</PkgAkka_Remote>
+    <PkgAkka_FSharp Condition=" '$(PkgAkka_FSharp)' == '' ">C:\Users\shrey\.nuget\packages\akka.fsharp\1.4.29</PkgAkka_FSharp>
   </PropertyGroup>
 </Project>

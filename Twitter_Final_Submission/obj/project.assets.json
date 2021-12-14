@@ -2,13 +2,14 @@
   "version": 3,
   "targets": {
     "net6.0": {
-      "Akka/1.4.28": {
+      "Akka/1.4.29": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "12.0.3",
           "System.Collections.Immutable": "5.0.0",
           "System.Configuration.ConfigurationManager": "4.7.0",
-          "System.Reflection.Emit": "4.7.0"
+          "System.Reflection.Emit": "4.7.0",
+          "System.Threading.Channels": "5.0.0"
         },
         "compile": {
           "lib/netstandard2.0/Akka.dll": {}
@@ -17,10 +18,10 @@
           "lib/netstandard2.0/Akka.dll": {}
         }
       },
-      "Akka.FSharp/1.4.28": {
+      "Akka.FSharp/1.4.29": {
         "type": "package",
         "dependencies": {
-          "Akka": "1.4.28",
+          "Akka": "1.4.29",
           "FSharp.Core": "6.0.1",
           "FSharp.Quotations.Evaluator": "2.1.0",
           "FsPickler": "5.3.2"
@@ -32,10 +33,10 @@
           "lib/netstandard2.0/Akka.FSharp.dll": {}
         }
       },
-      "Akka.Remote/1.4.28": {
+      "Akka.Remote/1.4.29": {
         "type": "package",
         "dependencies": {
-          "Akka": "1.4.28",
+          "Akka": "1.4.29",
           "DotNetty.Handlers": "0.6.0",
           "Google.Protobuf": "3.17.3"
         },
@@ -1751,6 +1752,15 @@
           "lib/netstandard1.3/System.Threading.dll": {}
         }
       },
+      "System.Threading.Channels/5.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp3.0/System.Threading.Channels.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/System.Threading.Channels.dll": {}
+        }
+      },
       "System.Threading.Overlapped/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -1899,45 +1909,45 @@
     }
   },
   "libraries": {
-    "Akka/1.4.28": {
-      "sha512": "BfDxdixF9pJUdO1VgNC/Ac0pFVS2YgiZsfxsqiteOpvPODmTuyUvYvGAA5dRrbI5dBnHukxF6pETWvX2wEQFSg==",
+    "Akka/1.4.29": {
+      "sha512": "TBIvEwaTVw/at51lPl44RESFbEvII+5SYMWWdzpED4u4d6hehJDHwLRnMEMZE/UqXjijO9UFih820RDBuEWwEg==",
       "type": "package",
-      "path": "akka/1.4.28",
+      "path": "akka/1.4.29",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "README.md",
-        "akka.1.4.28.nupkg.sha512",
+        "akka.1.4.29.nupkg.sha512",
         "akka.nuspec",
         "akkalogo.png",
         "lib/netstandard2.0/Akka.dll",
         "lib/netstandard2.0/Akka.xml"
       ]
     },
-    "Akka.FSharp/1.4.28": {
-      "sha512": "uGCSk968+cm7gtr9FGntYE/JYzvMCKpAfYgP80Gco0pZNtsW/S9BD64MIakPzExHHLsAh0A3Gv+1ZW0MIAbQcg==",
+    "Akka.FSharp/1.4.29": {
+      "sha512": "LCiIB90dflL8y9fC79qC2T1+0aYshEiF929KKbqzX2yU46fhDdLEhIQZSRaT7Xcomq3mbQK6B+IKGPaDASIEJA==",
       "type": "package",
-      "path": "akka.fsharp/1.4.28",
+      "path": "akka.fsharp/1.4.29",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "README.md",
-        "akka.fsharp.1.4.28.nupkg.sha512",
+        "akka.fsharp.1.4.29.nupkg.sha512",
         "akka.fsharp.nuspec",
         "akkalogo.png",
         "lib/netstandard2.0/Akka.FSharp.dll",
         "lib/netstandard2.0/Akka.FSharp.xml"
       ]
     },
-    "Akka.Remote/1.4.28": {
-      "sha512": "RHhLYDUGSQ0IEK6x7yXYgbSQu10tROjvMyE0h7rIqlXZsrd1EpVgiZxBHaA3ZyQKZZMuVXRmuDIUiXg3fc3xmQ==",
+    "Akka.Remote/1.4.29": {
+      "sha512": "eJWvRbyHKNw8YD5WfGG5Os03XL+6JcRD5FUdPsV5mcQEz13754XIruDfWrzR27YQUvHS9ptuLWxqkzWeFojzHg==",
       "type": "package",
-      "path": "akka.remote/1.4.28",
+      "path": "akka.remote/1.4.29",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "README.md",
-        "akka.remote.1.4.28.nupkg.sha512",
+        "akka.remote.1.4.29.nupkg.sha512",
         "akka.remote.nuspec",
         "akkalogo.png",
         "lib/netstandard2.0/Akka.Remote.dll",
@@ -5960,6 +5970,32 @@
         "system.threading.nuspec"
       ]
     },
+    "System.Threading.Channels/5.0.0": {
+      "sha512": "RLBIxntLaG9pRmmuVDwY1kc8Bvp/FQzSxPU+19VekkScKkWtVP9r8bLhm28ama3usc816UBrmkg3vv3jUea/hw==",
+      "type": "package",
+      "path": "system.threading.channels/5.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/System.Threading.Channels.dll",
+        "lib/net461/System.Threading.Channels.xml",
+        "lib/netcoreapp3.0/System.Threading.Channels.dll",
+        "lib/netcoreapp3.0/System.Threading.Channels.xml",
+        "lib/netstandard1.3/System.Threading.Channels.dll",
+        "lib/netstandard1.3/System.Threading.Channels.xml",
+        "lib/netstandard2.0/System.Threading.Channels.dll",
+        "lib/netstandard2.0/System.Threading.Channels.xml",
+        "lib/netstandard2.1/System.Threading.Channels.dll",
+        "lib/netstandard2.1/System.Threading.Channels.xml",
+        "system.threading.channels.5.0.0.nupkg.sha512",
+        "system.threading.channels.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
     "System.Threading.Overlapped/4.3.0": {
       "sha512": "m3HQ2dPiX/DSTpf+yJt8B0c+SRvzfqAJKx+QDWi+VLhz8svLT23MVjEOHPF/KiSLeArKU/iHescrbLd3yVgyNg==",
       "type": "package",
@@ -6398,9 +6434,9 @@
   },
   "projectFileDependencyGroups": {
     "net6.0": [
-      "Akka >= 1.4.28",
-      "Akka.FSharp >= 1.4.28",
-      "Akka.Remote >= 1.4.28",
+      "Akka >= 1.4.29",
+      "Akka.FSharp >= 1.4.29",
+      "Akka.Remote >= 1.4.29",
       "FSharp.Core >= 6.0.1",
       "Suave >= 2.6.1"
     ]
@@ -6439,17 +6475,17 @@
         "dependencies": {
           "Akka": {
             "target": "Package",
-            "version": "[1.4.28, )",
+            "version": "[1.4.29, )",
             "generatePathProperty": true
           },
           "Akka.FSharp": {
             "target": "Package",
-            "version": "[1.4.28, )",
+            "version": "[1.4.29, )",
             "generatePathProperty": true
           },
           "Akka.Remote": {
             "target": "Package",
-            "version": "[1.4.28, )",
+            "version": "[1.4.29, )",
             "generatePathProperty": true
           },
           "FSharp.Core": {

@@ -35,17 +35,17 @@
           "dependencies": {
             "Akka": {
               "target": "Package",
-              "version": "[1.4.28, )",
+              "version": "[1.4.29, )",
               "generatePathProperty": true
             },
             "Akka.FSharp": {
               "target": "Package",
-              "version": "[1.4.28, )",
+              "version": "[1.4.29, )",
               "generatePathProperty": true
             },
             "Akka.Remote": {
               "target": "Package",
-              "version": "[1.4.28, )",
+              "version": "[1.4.29, )",
               "generatePathProperty": true
             },
             "FSharp.Core": {
