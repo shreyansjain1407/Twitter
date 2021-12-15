@@ -1,4 +1,5 @@
 ﻿open Messages
+open Functions
 open System
 open System.Collections.Generic
 open Akka.Actor
