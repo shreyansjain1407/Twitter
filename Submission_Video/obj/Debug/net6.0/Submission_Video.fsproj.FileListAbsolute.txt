@@ -1,0 +1,3 @@
+D:\Twitter\Submission_Video\obj\Debug\net6.0\Submission_Video.fsproj.AssemblyReference.cache
+D:\Twitter\Submission_Video\obj\Debug\net6.0\Submission_Video.AssemblyInfoInputs.cache
+D:\Twitter\Submission_Video\obj\Debug\net6.0\Submission_Video.AssemblyInfo.fs

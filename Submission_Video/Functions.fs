@@ -1,13 +1,17 @@
 module Functions
 
+open System
+open System.Collections.Generic
+open Akka.Actor
+open Akka.Configuration
 open Akka.FSharp
-open Suave.Sockets
-
+open Suave.Logging
 
 let buildByteResponseToWS (message:string) =
     message
     |> System.Text.Encoding.ASCII.GetBytes
     |> ByteSegment
+
 
 let addUser (user: Register) =
     let temp = users.TryFind(user.UserName)

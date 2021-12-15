@@ -1,5 +1,4 @@
-﻿
-open Messages
+﻿open Messages
 open Functions
 open System
 open System.Collections.Generic
@@ -25,8 +24,8 @@ let setCORSHeaders =
     setHeader  "Access-Control-Allow-Origin" "*"
     >=> setHeader "Access-Control-Allow-Headers" "content-type"
 
-let mutable users = Map.empty<string,string>
-let mutable activeUsers = Map.empty<string,bool>
+let mutable users = Map.empty
+let mutable activeUsers = Map.empty
 let mutable tweetOwner = Map.empty
 let mutable followers = Map.empty
 let mutable mentions = Map.empty
